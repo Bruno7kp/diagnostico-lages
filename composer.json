@@ -3,7 +3,8 @@
         "slim/slim": "4.0",
         "slim/psr7": "^0.6.0",
         "vlucas/phpdotenv": "^3.6",
-        "tuupola/slim-basic-auth": "^3.2"
+        "tuupola/slim-basic-auth": "^3.2",
+      "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {

@@ -1,5 +1,5 @@
-create schema diagnostico collate latin1_swedish_ci;
-
+create schema diagnostico collate utf8mb4_unicode_ci;
+use diagnostico;
 create table categories
 (
     id int auto_increment

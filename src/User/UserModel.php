@@ -61,8 +61,8 @@ class UserModel extends Model
                 ":role" => $this->role,
                 ":password" => $this->password
             ]);
-            $this->db->commit();
             $this->id = intval($this->db->lastInsertId());
+            $this->db->commit();
             return $this->id > 0;
         } catch (\Exception $ex) {
             $this->error = $ex;
@@ -142,7 +142,17 @@ class UserModel extends Model
      * @return UserModel|null
      */
     public function getById($id) {
-        $st = $this->db->prepare("SELECT id, name, role, password, created, updated, email FROM user WHERE id = :id");
+        $st = $this->db->prepare("SELECT id, name, role, created, updated, email FROM user WHERE id = :id");
+        $st->execute([":id" => $id]);
+        return $st->fetchObject(__CLASS__);
+    }
+
+    /**
+     * @param $id
+     * @return UserModel|null
+     */
+    public function getWithPasswordById($id) {
+        $st = $this->db->prepare("SELECT id, name, password, role, created, updated, email FROM user WHERE id = :id");
         $st->execute([":id" => $id]);
         return $st->fetchObject(__CLASS__);
     }
@@ -152,7 +162,7 @@ class UserModel extends Model
      * @return UserModel|null
      */
     public function getByEmail($email) {
-        $st = $this->db->prepare("SELECT id, name, role, password, created, updated, email FROM user WHERE email = :email");
+        $st = $this->db->prepare("SELECT id, name, password, role, created, updated, email FROM user WHERE email = :email");
         $st->execute([":email" => $email]);
         return $st->fetchObject(__CLASS__);
     }
@@ -161,7 +171,7 @@ class UserModel extends Model
      * @return UserModel[]
      */
     public function getAll() {
-        $st = $this->db->prepare("SELECT id, name, role, password, created, updated, email FROM user ORDER BY name");
+        $st = $this->db->prepare("SELECT id, name, role, created, updated, email FROM user ORDER BY name");
         $st->execute();
         return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
     }

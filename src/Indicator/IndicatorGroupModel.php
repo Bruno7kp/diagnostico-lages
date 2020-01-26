@@ -51,8 +51,8 @@ class IndicatorGroupModel extends Model
                 ":categories_id" => $this->categories_id,
                 ":description" => $this->description
             ]);
-            $this->db->commit();
             $this->id = intval($this->db->lastInsertId());
+            $this->db->commit();
             return $this->id > 0;
         } catch (\Exception $ex) {
             $this->error = $ex;

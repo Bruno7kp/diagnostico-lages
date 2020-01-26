@@ -44,8 +44,8 @@ class SegmentationGroupModel extends Model
                 ":name" => $this->name,
                 ":description" => $this->description
             ]);
-            $this->db->commit();
             $this->id = intval($this->db->lastInsertId());
+            $this->db->commit();
             return $this->id > 0;
         } catch (\Exception $ex) {
             $this->error = $ex;

@@ -51,8 +51,8 @@ class SegmentationModel extends Model
                 ":segmentation_group_id" => $this->segmentation_group_id,
                 ":description" => $this->description
             ]);
-            $this->db->commit();
             $this->id = intval($this->db->lastInsertId());
+            $this->db->commit();
             return $this->id > 0;
         } catch (\Exception $ex) {
             $this->error = $ex;
@@ -67,7 +67,7 @@ class SegmentationModel extends Model
     public function update() {
         $this->db->beginTransaction();
         try {
-            $st = $this->db->prepare("UPDATE segmentation SET name = :name, segmentation_group_id = :indicator_group_id, description = :description, updated = CURRENT_TIMESTAMP WHERE id = :id");
+            $st = $this->db->prepare("UPDATE segmentation SET name = :name, segmentation_group_id = :segmentation_group_id, description = :description, updated = CURRENT_TIMESTAMP WHERE id = :id");
             $st->execute([
                 ":name" => $this->name,
                 ":description" => $this->description,

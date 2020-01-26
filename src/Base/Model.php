@@ -20,4 +20,21 @@ class Model
     {
         $this->db = new Database();
     }
+
+    /**
+     * @return \Exception|null
+     */
+    public function getError() {
+        return $this->error;
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrorMessage() {
+        if ($this->error instanceof \Exception) {
+            return $this->error->getMessage();
+        }
+        return "";
+    }
 }

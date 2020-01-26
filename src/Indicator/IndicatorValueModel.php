@@ -26,9 +26,9 @@ class IndicatorValueModel extends Model
     public $region_id;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $segmentation_id;
+    public $segmentation_id = null;
 
     /**
      * @var string
@@ -70,8 +70,8 @@ class IndicatorValueModel extends Model
                 ":value" => $this->value,
                 ":description" => $this->description
             ]);
-            $this->db->commit();
             $this->id = intval($this->db->lastInsertId());
+            $this->db->commit();
             return $this->id > 0;
         } catch (\Exception $ex) {
             $this->error = $ex;
@@ -162,11 +162,70 @@ class IndicatorValueModel extends Model
                 (:period IS NULL OR indicator_period = :period)
             ORDER BY updated DESC");
         $st->execute([
-            ":indicator_id" => $this->indicator_id,
-            ":region_id" => $this->region_id,
-            ":segmentation_id" => $this->segmentation_id,
-            ":period" => $this->indicator_period
+            ":indicator_id" => $indicator_id,
+            ":region_id" => $region_id,
+            ":segmentation_id" => $segmentation_id,
+            ":period" => $year
         ]);
         return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+    }
+
+    /**
+     * @param IndicatorValueModel[] $values
+     * @return bool
+     */
+    public function batchInsert($values) {
+        $this->db->beginTransaction();
+        try {
+            $st = $this->db->prepare("INSERT INTO indicator_value (indicator_id, region_id, segmentation_id, indicator_period, value, description) VALUES (:indicator_id, :region_id, :segmentation_id, :period, :value, :description)");
+            foreach ($values as $value) {
+                $st->execute([
+                    ":indicator_id" => $value->indicator_id,
+                    ":region_id" => $value->region_id,
+                    ":segmentation_id" => $value->segmentation_id,
+                    ":period" => $value->indicator_period,
+                    ":value" => $value->value,
+                    ":description" => $value->description
+                ]);
+            }
+            $this->id = intval($this->db->lastInsertId());
+            $this->db->commit();
+            return $this->id > 0;
+        } catch (\Exception $ex) {
+            $this->error = $ex;
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * @param IndicatorValueModel[] $values
+     * @return bool
+     */
+    public function batchUpdate($values) {
+        $this->db->beginTransaction();
+        try {
+            $rows = 0;
+            $st = $this->db->prepare("UPDATE indicator_value SET indicator_id = :indicator_id, region_id = :region_id, segmentation_id = :segmentation_id, indicator_period = :period, value = :value, description = :description, updated = CURRENT_TIMESTAMP WHERE id = :id");
+            foreach ($values as $value) {
+                $st->execute([
+                    ":indicator_id" => $value->indicator_id,
+                    ":region_id" => $value->region_id,
+                    ":segmentation_id" => $value->segmentation_id,
+                    ":period" => $value->indicator_period,
+                    ":value" => $value->value,
+                    ":description" => $value->description,
+                    ":id" => $value->id
+                ]);
+                $rows = $st->rowCount();
+            }
+
+            $this->db->commit();
+            return $rows > 0;
+        } catch (\Exception $ex) {
+            $this->error = $ex;
+            $this->db->rollBack();
+            return false;
+        }
     }
 }

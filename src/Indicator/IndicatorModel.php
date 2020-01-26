@@ -6,6 +6,8 @@ namespace App\Indicator;
 
 use App\Base\Model;
 use App\Indicator\IndicatorGroupModel;
+use App\Segmentation\SegmentationGroupModel;
+use App\Segmentation\SegmentationModel;
 
 class IndicatorModel extends Model
 {
@@ -46,6 +48,11 @@ class IndicatorModel extends Model
     public $updated;
 
     /**
+     * @var array
+     */
+    public $segmentations = [];
+
+    /**
      * @return bool
      */
     public function insert() {
@@ -58,8 +65,15 @@ class IndicatorModel extends Model
                 ":description" => $this->description,
                 ":type" => $this->type
             ]);
-            $this->db->commit();
             $this->id = intval($this->db->lastInsertId());
+            $sst = $this->db->prepare("INSERT INTO indicator_segmentation_group (indicator_id, segmentation_group_id) VALUES (:indicator_id, :segmentation_group_id)");
+            foreach ($this->segmentations as $id) {
+                $sst->execute([
+                    ":indicator_id" => $this->id,
+                    "segmentation_group_id" => $id
+                ]);
+            }
+            $this->db->commit();
             return $this->id > 0;
         } catch (\Exception $ex) {
             $this->error = $ex;
@@ -82,6 +96,15 @@ class IndicatorModel extends Model
                 ":type" => $this->type,
                 ":id" => $this->id
             ]);
+            $dst = $this->db->prepare("DELETE FROM indicator_segmentation_group WHERE indicator_id = :indicator_id");
+            $dst->execute([":indicator_id" => $this->id]);
+            $sst = $this->db->prepare("INSERT INTO indicator_segmentation_group (indicator_id, segmentation_group_id) VALUES (:indicator_id, :segmentation_group_id)");
+            foreach ($this->segmentations as $id) {
+                $sst->execute([
+                    ":indicator_id" => $this->id,
+                    "segmentation_group_id" => $id
+                ]);
+            }
             $this->db->commit();
             return $st->rowCount() > 0;
         } catch (\Exception $ex) {
@@ -117,7 +140,10 @@ class IndicatorModel extends Model
     public function getById($id) {
         $st = $this->db->prepare("SELECT id, name, indicator_group_id, type, description, created, updated FROM indicator WHERE id = :id");
         $st->execute([":id" => $id]);
-        return $st->fetchObject(__CLASS__);
+        $model = $st->fetchObject(__CLASS__);
+        if ($model instanceof IndicatorModel)
+            $model->fillSegmentations();
+        return $model;
     }
 
     /**
@@ -126,7 +152,12 @@ class IndicatorModel extends Model
     public function getAll() {
         $st = $this->db->prepare("SELECT id, name, indicator_group_id, type, description, created, updated FROM indicator ORDER BY name");
         $st->execute();
-        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+        $list = $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+        foreach ($list as $item) {
+            if ($item instanceof IndicatorModel)
+                $item->fillSegmentations();
+        }
+        return $list;
     }
 
     /**
@@ -136,7 +167,12 @@ class IndicatorModel extends Model
     public function getAllByGroup($id) {
         $st = $this->db->prepare("SELECT id, name, indicator_group_id, type, description, created, updated FROM indicator WHERE indicator_group_id = :id ORDER BY name");
         $st->execute([":id" => $id]);
-        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+        $list = $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+        foreach ($list as $item) {
+            if ($item instanceof IndicatorModel)
+                $item->fillSegmentations();
+        }
+        return $list;
     }
 
     /**
@@ -145,5 +181,33 @@ class IndicatorModel extends Model
     public function getGroup() {
         $model = new IndicatorGroupModel();
         return $model->getById($this->indicator_group_id);
+    }
+
+    /**
+     * @return $this
+     */
+    public function fillSegmentations() {
+        $st = $this->db->prepare("SELECT segmentation_group_id FROM indicator_segmentation_group WHERE indicator_id = :indicator_id");
+        $st->execute([":indicator_id" => $this->id]);
+        $fill = $st->fetchAll(\PDO::FETCH_ASSOC);
+        foreach ($fill as $item) {
+            $this->segmentations[] = $item["segmentation_group_id"];
+        }
+        return $this;
+    }
+
+    /**
+     * @return SegmentationGroupModel[]
+     */
+    public function getSegmentations() {
+        $model = new SegmentationGroupModel();
+        $list = [];
+        foreach ($this->segmentations as $id) {
+            $item = $model->getById($id);
+            if ($item) {
+                $list[] = $item;
+            }
+        }
+        return $list;
     }
 }

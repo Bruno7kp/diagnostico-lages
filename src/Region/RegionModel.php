@@ -36,7 +36,7 @@ class RegionModel extends Model
     /**
      * @var string
      */
-    public $update;
+    public $updated;
 
     /**
      * @return bool
@@ -50,8 +50,8 @@ class RegionModel extends Model
                 ":description" => $this->description,
                 ":city" => $this->city
             ]);
-            $this->db->commit();
             $this->id = intval($this->db->lastInsertId());
+            $this->db->commit();
             return $this->id > 0;
         } catch (\Exception $ex) {
             $this->error = $ex;
@@ -115,7 +115,7 @@ class RegionModel extends Model
      * @return RegionModel[]
      */
     public function getAll() {
-        $st = $this->db->prepare("SELECT id, name, description, city, created, updated FROM region ORDER BY name");
+        $st = $this->db->prepare("SELECT id, name, description, city, created, updated FROM region ORDER BY city DESC, name");
         $st->execute();
         return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
     }

@@ -10,6 +10,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class UserController extends Controller
 {
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
     public function register(Request $request, Response $response) {
         if (Roles::isAdmin($this->user)) {
             $body = $request->getParsedBody();
@@ -60,6 +65,11 @@ class UserController extends Controller
         return $this->response($response, 403);
     }
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
     public function update(Request $request, Response $response) {
         if (Roles::isDataOrUp($this->user)) {
             $body = $request->getParsedBody();
@@ -108,6 +118,11 @@ class UserController extends Controller
         return $this->response($response, 403);
     }
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
     public function updatePassword(Request $request, Response $response) {
         if (Roles::isDataOrUp($this->user)) {
             $body = $request->getParsedBody();
@@ -144,13 +159,18 @@ class UserController extends Controller
         return $this->response($response, 403);
     }
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
     public function remove(Request $request, Response $response) {
         if (Roles::isAdmin($this->user)) {
             $body = $request->getParsedBody();
             $user = new UserModel();
             if (array_key_exists("id", $body)) {
                 $user = $user->getById($body["id"]);
-                if ($user !== null && !Roles::isAdmin($user)) {
+                if ($user && !Roles::isAdmin($user)) {
                     if ($user->delete()) {
                         $this->log->action = $this->user->name . " removeu o usuário " . $user->name;
                         $this->log->entity = "user";
@@ -165,6 +185,11 @@ class UserController extends Controller
         return $this->response($response, 403);
     }
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
     public function login(Request $request, Response $response) {
         if (Roles::isGuest($this->user)) {
             $body = $request->getParsedBody();
@@ -172,11 +197,12 @@ class UserController extends Controller
 
             if (array_key_exists("email", $body) && filter_var($body["email"], FILTER_VALIDATE_EMAIL)) {
                 $user = $user->getByEmail($body["email"]);
-                if (array_key_exists("password", $body) && $user->login($body["password"])) {
+                if (array_key_exists("password", $body) && $user && $user->login($body["password"])) {
                     $this->auth->startSession($user);
                     $this->log->action = $user->name . " fez login";
                     $this->log->entity = "user";
                     $this->log->entity_id = $user->id;
+                    $this->log->user_id = $this->user->id;
                     $this->log->insert();
                     return $this->response($response, 200, ["message" => "Login realizado com sucesso!"]);
                 } else {
@@ -188,12 +214,18 @@ class UserController extends Controller
         return $this->response($response, 403);
     }
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
     public function logout(Request $request, Response $response) {
         if (Roles::isDataOrUp($this->user)) {
             $this->auth->endSession();
             $this->log->action = $this->user->name . " fez logout";
             $this->log->entity = "user";
             $this->log->entity_id = $this->user->id;
+            $this->log->user_id = $this->user->id;
             $this->log->insert();
             return $this->response($response, 200);
         } else {

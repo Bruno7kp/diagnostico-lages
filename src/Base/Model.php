@@ -9,12 +9,12 @@ class Model
     /**
      * @var Database|null
      */
-    public $db = null;
+    protected $db = null;
 
     /**
      * @var \Exception|null
      */
-    public $error = null;
+    protected $error = null;
 
     public function __construct()
     {

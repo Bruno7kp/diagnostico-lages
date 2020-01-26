@@ -52,6 +52,13 @@ class Controller
                     ];
                 }
                 break;
+            case 404:
+                if (empty($data)) {
+                    $data = [
+                        'message' => 'Página ou recurso não encontrado.'
+                    ];
+                }
+                break;
             case 403:
                 if (empty($data)) {
                     $data = [

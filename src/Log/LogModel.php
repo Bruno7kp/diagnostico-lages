@@ -62,10 +62,12 @@ class LogModel extends Model
     }
 
     /**
+     * @param int $from
+     * @param int $offset
      * @return LogModel[]
      */
-    public function getAll() {
-        $st = $this->db->prepare("SELECT id, user_id, entity, entity_id, action, created FROM log ORDER BY id DESC");
+    public function getAll($from, $offset) {
+        $st = $this->db->prepare("SELECT id, user_id, entity, entity_id, action, created FROM log ORDER BY id DESC LIMIT ".$from.", ".$offset);
         $st->execute();
         return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
     }

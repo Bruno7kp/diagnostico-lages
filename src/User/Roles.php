@@ -39,4 +39,23 @@ class Roles
     public static function isModOrUp(UserModel $user) {
         return Roles::isMod($user) || Roles::isAdmin($user);
     }
+
+    public function text($role) {
+        $r = "";
+        switch($role) {
+            case "admin":
+                $r = "Administrador";
+                break;
+            case "mod":
+                $r = "Moderador";
+                break;
+            case "data":
+                $r = "Moderador de dados";
+                break;
+            case "guest":
+                $r = "Visitante";
+                break;
+        }
+        return $r;
+    }
 }

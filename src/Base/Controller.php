@@ -8,6 +8,8 @@ use App\Log\LogModel;
 use App\User\Auth;
 use App\User\UserModel;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Views\Twig;
 
 class Controller
 {
@@ -71,5 +73,12 @@ class Controller
         $response->getBody()->write($payload);
 
         return $response;
+    }
+
+    public function view(Request $request) {
+        $view = Twig::fromRequest($request);
+        $view->getEnvironment()->addGlobal('user', $this->user);
+        $view->getEnvironment()->addGlobal('helper', new Helper());
+        return $view;
     }
 }

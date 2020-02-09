@@ -1,5 +1,6 @@
 <?php
 
+use App\Admin\AdminController;
 use App\Categories\CategoriesController;
 use App\Home\HomeController;
 use App\Indicator\IndicatorController;
@@ -11,6 +12,9 @@ use App\Segmentation\SegmentationController;
 use App\Segmentation\SegmentationGroupController;
 use App\User\UserController;
 use Slim\Factory\AppFactory;
+use Slim\Interfaces\ErrorRendererInterface;
+use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -22,10 +26,15 @@ $dotenv->load();
 
 $app = AppFactory::create();
 
+$twig = Twig::create(dirname(__DIR__) . '/view', ['cache' => getenv('ENV') === 'prod' ? dirname(__DIR__) . '/cache' : false]);
+$app->add(TwigMiddleware::create($app, $twig));
+
 /**
- * Site
+ * Admin
  */
-$app->get('/', HomeController::class.":index");
+$app->get('/admin', AdminController::class.":index");
+$app->get('/login', AdminController::class.":login");
+$app->get('/logs', AdminController::class.":logs");
 
 /**
  * Autorização
@@ -106,6 +115,23 @@ $app->post('/indicator-value/search', IndicatorValueController::class.":search")
  */
 $app->post('/logs/user', LogController::class.":userLog");
 $app->post('/logs/entity', LogController::class.":entityLog");
-$app->post('/logs/all', LogController::class.":all");
+$app->get('/logs/all', LogController::class.":all");
+
+// Errors
+$errorMiddleware = $app->addErrorMiddleware(getenv('ENV') !== 'prod', true, true);
+
+class MyCustomErrorRenderer implements ErrorRendererInterface
+{
+    public function __invoke(Throwable $exception, bool $displayErrorDetails): string
+    {
+        if ($displayErrorDetails)
+            return $exception->getTraceAsString();
+        return $exception->getMessage();
+    }
+}
+// Get the default error handler and register my custom error renderer.
+$errorHandler = $errorMiddleware->getDefaultErrorHandler();
+$errorHandler->registerErrorRenderer('text/html', MyCustomErrorRenderer::class);
+
 
 $app->run();

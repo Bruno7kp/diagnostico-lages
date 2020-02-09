@@ -62,14 +62,30 @@ class LogModel extends Model
     }
 
     /**
+     * @param $search
      * @param int $from
      * @param int $offset
      * @return LogModel[]
      */
-    public function getAll($from, $offset) {
-        $st = $this->db->prepare("SELECT id, user_id, entity, entity_id, action, created FROM log ORDER BY id DESC LIMIT ".$from.", ".$offset);
-        $st->execute();
-        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+    public function getAll($search, $from, $offset) {
+        $st = $this->db->prepare("SELECT id, action, created FROM log WHERE action LIKE :search ORDER BY id DESC LIMIT ".$from.", ".$offset);
+        $st->execute([
+            ":search" => $search
+        ]);
+        return $st->fetchAll(\PDO::FETCH_NUM);
+    }
+
+    /**
+     * @param string $search
+     * @return int
+     */
+    public function getTotal($search = "%%") {
+        $st = $this->db->prepare("SELECT COUNT(id) as total FROM log WHERE action LIKE :search");
+        $st->execute([":search" => $search]);
+        $res = $st->fetch(\PDO::FETCH_OBJ);
+        if ($res)
+            return intval($res->total);
+        return 0;
     }
 
     /**

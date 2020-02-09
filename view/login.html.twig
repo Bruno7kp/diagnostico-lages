@@ -1,0 +1,30 @@
+{% extends "admin.html.twig" %}
+{% block title %}Login{% endblock %}
+{% block page %}
+  <div class="page-single">
+    <div class="container">
+      <div class="row">
+        <div class="col col-login mx-auto">
+          <form class="card" id="form-login">
+            <div class="card-body p-6">
+              <div class="card-title">Entrar na área administrativa</div>
+              <div class="form-group">
+                <label class="form-label">E-mail</label>
+                <input type="email" name="email" required class="form-control" placeholder="email@uniplaclages.edu.br">
+              </div>
+              <div class="form-group">
+                <label class="form-label">
+                  Senha
+                </label>
+                <input type="password" required name="password" class="form-control" placeholder="Senha">
+              </div>
+              <div class="form-footer">
+                <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

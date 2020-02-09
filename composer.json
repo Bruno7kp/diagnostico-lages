@@ -6,7 +6,8 @@
         "tuupola/slim-basic-auth": ">=3.2 <4.0.0",
         "php": "^7.1",
         "ext-pdo": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "slim/twig-view": "^3.0.0-dev"
     },
     "autoload": {
         "psr-4": {

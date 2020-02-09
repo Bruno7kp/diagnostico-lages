@@ -54,18 +54,16 @@ class LogController extends Controller
      */
     public function all(Request $request, Response $response) {
         if (Roles::isAdmin($this->user)) {
-            $body = $request->getParsedBody();
-            $from = 0;
-            $offset = 50;
-            if (array_key_exists("from", $body)) {
-                $from = intval($body["from"]);
-            }
-            if (array_key_exists("offset", $body)) {
-                $offset = intval($body["offset"]);
-            }
+            $args = $request->getQueryParams();
+            $search = "%" . $args["search"]["value"] . "%";
+            $draw = intval($args["draw"]);
+            $from = intval($args["start"]);
+            $offset = intval($args["length"]);
             $log = new LogModel();
-            $logs = $log->getAll($from, $offset);
-            return $this->response($response, 200, ["data" => $logs]);
+            $logs = $log->getAll($search, $from, $offset);
+            $total = $log->getTotal();
+            $filtered = $log->getTotal($search);
+            return $this->response($response, 200, ["draw" => $draw, "data" => $logs, "recordsTotal" => $total, "recordsFiltered" => $filtered]);
         }
         return $this->response($response, 403);
     }

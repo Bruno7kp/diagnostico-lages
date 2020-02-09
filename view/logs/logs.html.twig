@@ -1,0 +1,42 @@
+{% extends "admin.html.twig" %}
+{% block title %}Logs{% endblock %}
+
+{% block content %}
+    <div class="container mt-6">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Logs</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap datatable">
+                            <thead>
+                            <tr>
+                                <th class="w-1">#</th>
+                                <th>Ação</th>
+                                <th>Data/Horário</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <script>
+                            require(['datatables', 'jquery'], function(datatable, $) {
+                                $('.datatable').DataTable({
+                                    "processing": true,
+                                    "serverSide": true,
+                                    "ordering": false,
+                                    "ajax": "/logs/all",
+                                    "language": {
+                                        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Portuguese-Brasil.json"
+                                    },
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

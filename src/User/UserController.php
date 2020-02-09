@@ -60,7 +60,8 @@ class UserController extends Controller
 
                 return $this->response($response, 201, [
                     "message" => "Usuário cadastrado!",
-                    "data" => $user->getById($user->id)
+                    "data" => $user->getById($user->id),
+                    "redirect" => "/admin/user"
                 ]);
             } else {
                 return $this->response($response, 500);
@@ -253,6 +254,9 @@ class UserController extends Controller
             $users = $user->getAll($search, $from, $offset);
             $total = $user->getTotal();
             $filtered = $user->getTotal($search);
+            foreach ($users as &$user) {
+                $user[2] = Roles::text($user[2]);
+            }
             return $this->response($response, 200, ["draw" => $draw, "data" => $users, "recordsTotal" => $total, "recordsFiltered" => $filtered]);
         }
         return $this->response($response, 403);
@@ -265,10 +269,46 @@ class UserController extends Controller
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
+     * @throws \ReflectionException
      */
     public function users(Request $request, Response $response) {
         if (Roles::isAdmin($this->user)) {
             return $this->view($request)->render($response, 'user\users.html.twig', []);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function add(Request $request, Response $response) {
+        if (Roles::isAdmin($this->user)) {
+            return $this->view($request)->render($response, 'user\user.html.twig', ["current" => new UserModel()]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function edit(Request $request, Response $response, $args) {
+        if (Roles::isAdmin($this->user) || $args["id"] == $this->user->id) {
+            $current = new UserModel();
+            $current = $current->getById($args["id"]);
+            return $this->view($request)->render($response, 'user\user.html.twig', ["current" => $current]);
         }
         return $this->response($response->withHeader('Location', '/admin'), 302);
     }

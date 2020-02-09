@@ -1,0 +1,62 @@
+{% extends "admin.html.twig" %}
+{% block title %}{{ current.id > 0 ? 'Editar ' ~ current.name : 'Adicionar usuário' }}{% endblock %}
+
+{% block content %}
+<div class="container mt-6">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header justify-content-between">
+                    <h3 class="card-title">{{ current.id > 0 ? 'Editar ' ~ current.name : 'Adicionar usuário' }}</h3>
+                </div>
+                <div class="card-body">
+                    <form id="user-form" action="{{ current.id > 0 ? '/user/update' : '/user/register' }}" method="post" data-send>
+                        <div class="row">
+                            <div class="col-md-4 col-sm-12">
+                                <input type="hidden" name="id" value="{{ current.id }}">
+                                <div class="form-group">
+                                    <label class="form-label">Nome</label>
+                                    <input type="text" required class="form-control" name="name" value="{{ current.name }}" placeholder="Nome">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label">E-mail</label>
+                                    <input type="email" required class="form-control" name="email" value="{{ current.email }}" placeholder="email@uniplaclages.edu.br">
+                                </div>
+                            </div>
+                            {% if helper.role.isAdmin(user) %}
+                            <div class="col-md-4 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label">Nível/Permissão</label>
+                                    <select name="role" class="form-control">
+                                        <option value="data" {{ current.role == 'data' ? 'selected' : '' }}>Editor (Dados de índices)</option>
+                                        <option value="mod" {{ current.role == 'mod' ? 'selected' : '' }}>Moderador (Regiões, Segmentações, etc.)</option>
+                                        <option value="admin" {{ current.role == 'admin' ? 'selected' : '' }}>Administrador (Usuários, etc.)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if current.id is null %}
+                                <div class="col-md-4 col-sm-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Senha</label>
+                                        <input type="password" required class="form-control" name="password">
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </form>
+
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-success" type="submit" form="user-form"><i class="fe fe-save"></i> Salvar</button>
+                    {% if current.id is not null %}
+                        <a href="/admin/password/{{ current.id }}" class="btn btn-primary"><i class="fe fe-unlock"></i> Alterar senha</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

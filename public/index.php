@@ -49,7 +49,9 @@ $app->post('/user/update', UserController::class.":update");
 $app->post('/user/update-password', UserController::class.":updatePassword");
 $app->post('/user/remove', UserController::class.":remove");
 $app->get('/user/all', UserController::class.":all");
-$app->get('/user', UserController::class.":users");
+$app->get('/admin/user', UserController::class.":users");
+$app->get('/admin/user/add', UserController::class.":add");
+$app->get('/admin/user/{id}', UserController::class.":edit");
 
 /**
  * Região
@@ -114,7 +116,7 @@ $app->post('/indicator-value/search', IndicatorValueController::class.":search")
 /**
  * Logs
  */
-$app->get('/logs', LogController::class.":logs");
+$app->get('/admin/logs', LogController::class.":logs");
 $app->post('/logs/user', LogController::class.":userLog");
 $app->post('/logs/entity', LogController::class.":entityLog");
 $app->get('/logs/all', LogController::class.":all");

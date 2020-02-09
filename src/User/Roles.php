@@ -40,7 +40,7 @@ class Roles
         return Roles::isMod($user) || Roles::isAdmin($user);
     }
 
-    public function text($role) {
+    public static function text($role) {
         $r = "";
         switch($role) {
             case "admin":
@@ -50,7 +50,7 @@ class Roles
                 $r = "Moderador";
                 break;
             case "data":
-                $r = "Moderador de dados";
+                $r = "Editor";
                 break;
             case "guest":
                 $r = "Visitante";

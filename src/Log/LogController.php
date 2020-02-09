@@ -8,6 +8,9 @@ use App\Base\Controller;
 use App\User\Roles;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class LogController extends Controller
 {
@@ -66,5 +69,20 @@ class LogController extends Controller
             return $this->response($response, 200, ["draw" => $draw, "data" => $logs, "recordsTotal" => $total, "recordsFiltered" => $filtered]);
         }
         return $this->response($response, 403);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function logs(Request $request, Response $response) {
+        if (Roles::isAdmin($this->user)) {
+            return $this->view($request)->render($response, 'logs\logs.html.twig', []);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
     }
 }

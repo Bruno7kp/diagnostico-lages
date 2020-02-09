@@ -5,8 +5,12 @@ namespace App\User;
 
 
 use App\Base\Controller;
+use App\Log\LogModel;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class UserController extends Controller
 {
@@ -231,5 +235,41 @@ class UserController extends Controller
         } else {
             return $this->response($response, 403);
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function all(Request $request, Response $response) {
+        if (Roles::isAdmin($this->user)) {
+            $args = $request->getQueryParams();
+            $search = "%" . $args["search"]["value"] . "%";
+            $draw = intval($args["draw"]);
+            $from = intval($args["start"]);
+            $offset = intval($args["length"]);
+            $user = new UserModel();
+            $users = $user->getAll($search, $from, $offset);
+            $total = $user->getTotal();
+            $filtered = $user->getTotal($search);
+            return $this->response($response, 200, ["draw" => $draw, "data" => $users, "recordsTotal" => $total, "recordsFiltered" => $filtered]);
+        }
+        return $this->response($response, 403);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function users(Request $request, Response $response) {
+        if (Roles::isAdmin($this->user)) {
+            return $this->view($request)->render($response, 'user\users.html.twig', []);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
     }
 }

@@ -168,12 +168,28 @@ class UserModel extends Model
     }
 
     /**
+     * @param string $search
+     * @param $from
+     * @param $offset
      * @return UserModel[]
      */
-    public function getAll() {
-        $st = $this->db->prepare("SELECT id, name, role, created, updated, email FROM user ORDER BY name");
-        $st->execute();
-        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+    public function getAll($search, $from, $offset) {
+        $st = $this->db->prepare("SELECT id, name, role, email FROM user WHERE name LIKE :search OR email LIKE :search ORDER BY name LIMIT ".$from.", ".$offset);
+        $st->execute([":search" => $search]);
+        return $st->fetchAll(\PDO::FETCH_NUM);
+    }
+
+    /**
+     * @param string $search
+     * @return int
+     */
+    public function getTotal($search = "%%") {
+        $st = $this->db->prepare("SELECT COUNT(id) as total FROM user WHERE name LIKE :search OR email LIKE :search");
+        $st->execute([":search" => $search]);
+        $res = $st->fetch(\PDO::FETCH_OBJ);
+        if ($res)
+            return intval($res->total);
+        return 0;
     }
 
     /**

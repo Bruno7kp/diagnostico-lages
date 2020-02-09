@@ -34,7 +34,6 @@ $app->add(TwigMiddleware::create($app, $twig));
  */
 $app->get('/admin', AdminController::class.":index");
 $app->get('/login', AdminController::class.":login");
-$app->get('/logs', AdminController::class.":logs");
 
 /**
  * Autorização
@@ -49,6 +48,8 @@ $app->post('/user/register', UserController::class.":register");
 $app->post('/user/update', UserController::class.":update");
 $app->post('/user/update-password', UserController::class.":updatePassword");
 $app->post('/user/remove', UserController::class.":remove");
+$app->get('/user/all', UserController::class.":all");
+$app->get('/user', UserController::class.":users");
 
 /**
  * Região
@@ -113,6 +114,7 @@ $app->post('/indicator-value/search', IndicatorValueController::class.":search")
 /**
  * Logs
  */
+$app->get('/logs', LogController::class.":logs");
 $app->post('/logs/user', LogController::class.":userLog");
 $app->post('/logs/entity', LogController::class.":entityLog");
 $app->get('/logs/all', LogController::class.":all");

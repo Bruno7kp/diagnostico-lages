@@ -1,0 +1,57 @@
+{% extends "admin.html.twig" %}
+{% block title %}Usuários{% endblock %}
+
+{% block content %}
+    <div class="container mt-6">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Usuários</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap datatable">
+                            <thead>
+                            <tr>
+                                <th class="w-1">#</th>
+                                <th>Usuário</th>
+                                <th>Nível/Permissão</th>
+                                <th>E-mail</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <script>
+                            require(['datatables', 'jquery'], function(datatable, $) {
+                                $('.datatable').DataTable({
+                                    "processing": true,
+                                    "serverSide": true,
+                                    "ordering": false,
+                                    "ajax": "/user/all",
+                                    "language": {
+                                        "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Portuguese-Brasil.json"
+                                    },
+                                    "columnDefs": [{
+                                        "targets": -1,
+                                        "data": null,
+                                        "render": function (data, type, full, meta) {
+                                            return `<a href="/user/${full[0]}" class="btn btn-secondary btn-sm"><i class='fe fe-edit'></i> Editar</a>
+                                                <div class="item-action dropdown">
+                                                  <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                                                  <div class="dropdown-menu dropdown-menu-right">
+                                                    <button class="dropdown-item" type="button" onclick="Manager.tryRemove('/user/remove', ${full[0]})"><i class="dropdown-icon fe fe-trash"></i> Remover</button>
+                                                  </div>
+                                                </div>`
+                                        }
+                                    }]
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

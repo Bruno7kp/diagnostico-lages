@@ -44,19 +44,4 @@ class AdminController extends Controller
         }
         return $this->response($response->withHeader('Location', '/admin'), 302);
     }
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @return Response
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
-     */
-    public function logs(Request $request, Response $response) {
-        if (Roles::isAdmin($this->user)) {
-            return $this->view($request)->render($response, 'logs\logs.html.twig', []);
-        }
-        return $this->response($response->withHeader('Location', '/admin'), 302);
-    }
 }

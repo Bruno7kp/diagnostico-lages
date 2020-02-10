@@ -312,4 +312,23 @@ class UserController extends Controller
         }
         return $this->response($response->withHeader('Location', '/admin'), 302);
     }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function editPassword(Request $request, Response $response, $args) {
+        if (Roles::isAdmin($this->user) || $args["id"] == $this->user->id) {
+            $current = new UserModel();
+            $current = $current->getById($args["id"]);
+            return $this->view($request)->render($response, 'user\password.html.twig', ["current" => $current]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
 }

@@ -52,6 +52,7 @@ $app->get('/user/all', UserController::class.":all");
 $app->get('/admin/user', UserController::class.":users");
 $app->get('/admin/user/add', UserController::class.":add");
 $app->get('/admin/user/{id}', UserController::class.":edit");
+$app->get('/admin/password/{id}', UserController::class.":editPassword");
 
 /**
  * Região

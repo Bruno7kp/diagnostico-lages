@@ -72,6 +72,9 @@ $app->post('/categories/register', CategoriesController::class.":register");
 $app->post('/categories/update', CategoriesController::class.":update");
 $app->post('/categories/remove', CategoriesController::class.":remove");
 $app->get('/categories/all', CategoriesController::class.":all");
+$app->get('/admin/categories', CategoriesController::class.":categories");
+$app->get('/admin/categories/add', CategoriesController::class.":add");
+$app->get('/admin/categories/{id}', CategoriesController::class.":edit");
 
 /**
  * Grupo de segmentações

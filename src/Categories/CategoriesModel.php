@@ -105,11 +105,30 @@ class CategoriesModel extends Model
     }
 
     /**
+     * @param $search
+     * @param $from
+     * @param $offset
+     * @param bool $datatables
      * @return CategoriesModel[]
      */
-    public function getAll() {
-        $st = $this->db->prepare("SELECT id, name, description, created, updated FROM categories ORDER BY name");
-        $st->execute();
+    public function getAll($search, $from, $offset, $datatables = true) {
+        $st = $this->db->prepare("SELECT id, name FROM categories WHERE name LIKE :search ORDER BY name LIMIT ".$from.", ".$offset);
+        $st->execute([":search" => $search]);
+        if ($datatables)
+            return $st->fetchAll(\PDO::FETCH_NUM);
         return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+    }
+
+    /**
+     * @param string $search
+     * @return int
+     */
+    public function getTotal($search = "%%") {
+        $st = $this->db->prepare("SELECT COUNT(id) as total FROM categories WHERE name LIKE :search");
+        $st->execute([":search" => $search]);
+        $res = $st->fetch(\PDO::FETCH_OBJ);
+        if ($res)
+            return intval($res->total);
+        return 0;
     }
 }

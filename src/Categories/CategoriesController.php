@@ -5,10 +5,12 @@ namespace App\Categories;
 
 
 use App\Base\Controller;
-use App\Region\RegionModel;
 use App\User\Roles;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class CategoriesController extends Controller
 {
@@ -42,7 +44,8 @@ class CategoriesController extends Controller
 
                 return $this->response($response, 201, [
                     "message" => "Categoria cadastrada!",
-                    "data" => $category->getById($category->id)
+                    "data" => $category->getById($category->id),
+                    "redirect" => "/admin/categories"
                 ]);
             } else {
                 return $this->response($response, 500);
@@ -119,8 +122,69 @@ class CategoriesController extends Controller
      * @return Response
      */
     public function all(Request $request, Response $response) {
-        $category = new CategoriesModel();
+        if (Roles::isModOrUp($this->user)) {
+            $args = $request->getQueryParams();
+            $search = "%" . $args["search"]["value"] . "%";
+            $draw = intval($args["draw"]);
+            $from = intval($args["start"]);
+            $offset = intval($args["length"]);
+            $category = new CategoriesModel();
+            $categories = $category->getAll($search, $from, $offset);
+            $total = $category->getTotal();
+            $filtered = $category->getTotal($search);
+            return $this->response($response, 200, ["draw" => $draw, "data" => $categories, "recordsTotal" => $total, "recordsFiltered" => $filtered]);
+        }
+        return $this->response($response, 403);
+    }
 
-        return $this->response($response, 200, ["data" => $category->getAll()]);
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function categories(Request $request, Response $response) {
+        if (Roles::isModOrUp($this->user)) {
+            return $this->view($request)->render($response, 'category\categories.html.twig', []);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function add(Request $request, Response $response) {
+        if (Roles::isModOrUp($this->user)) {
+            return $this->view($request)->render($response, 'category\category.html.twig', ["current" => new CategoriesModel()]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function edit(Request $request, Response $response, $args) {
+        if (Roles::isModOrUp($this->user)) {
+            $current = new CategoriesModel();
+            $current = $current->getById($args["id"]);
+            return $this->view($request)->render($response, 'category\category.html.twig', ["current" => $current]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
     }
 }

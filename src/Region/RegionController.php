@@ -8,6 +8,9 @@ use App\Base\Controller;
 use App\User\Roles;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class RegionController extends Controller
 {
@@ -47,7 +50,8 @@ class RegionController extends Controller
 
                 return $this->response($response, 201, [
                     "message" => "Região cadastrada!",
-                    "data" => $region->getById($region->id)
+                    "data" => $region->getById($region->id),
+                    "redirect" => "/admin/region"
                 ]);
             } else {
                 return $this->response($response, 500);
@@ -122,14 +126,70 @@ class RegionController extends Controller
         return $this->response($response, 403);
     }
 
+    public function all(Request $request, Response $response) {
+        if (Roles::isModOrUp($this->user)) {
+            $args = $request->getQueryParams();
+            $search = "%" . $args["search"]["value"] . "%";
+            $draw = intval($args["draw"]);
+            $from = intval($args["start"]);
+            $offset = intval($args["length"]);
+            $region = new RegionModel();
+            $regions = $region->getAll($search, $from, $offset);
+            $total = $region->getTotal();
+            $filtered = $region->getTotal($search);
+            return $this->response($response, 200, ["draw" => $draw, "data" => $regions, "recordsTotal" => $total, "recordsFiltered" => $filtered]);
+        }
+        return $this->response($response, 403);
+    }
+
     /**
      * @param Request $request
      * @param Response $response
      * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
      */
-    public function all(Request $request, Response $response) {
-        $region = new RegionModel();
+    public function regions(Request $request, Response $response) {
+        if (Roles::isModOrUp($this->user)) {
+            return $this->view($request)->render($response, 'region\regions.html.twig', []);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
 
-        return $this->response($response, 200, ["data" => $region->getAll()]);
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function add(Request $request, Response $response) {
+        if (Roles::isModOrUp($this->user)) {
+            return $this->view($request)->render($response, 'region\region.html.twig', ["current" => new RegionModel()]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function edit(Request $request, Response $response, $args) {
+        if (Roles::isModOrUp($this->user)) {
+            $current = new RegionModel();
+            $current = $current->getById($args["id"]);
+            return $this->view($request)->render($response, 'region\region.html.twig', ["current" => $current]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
     }
 }

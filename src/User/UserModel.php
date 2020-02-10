@@ -171,12 +171,15 @@ class UserModel extends Model
      * @param string $search
      * @param $from
      * @param $offset
+     * @param bool $datatables
      * @return UserModel[]
      */
-    public function getAll($search, $from, $offset) {
+    public function getAll($search, $from, $offset, $datatables = true) {
         $st = $this->db->prepare("SELECT id, name, role, email FROM user WHERE name LIKE :search OR email LIKE :search ORDER BY name LIMIT ".$from.", ".$offset);
         $st->execute([":search" => $search]);
-        return $st->fetchAll(\PDO::FETCH_NUM);
+        if ($datatables)
+            return $st->fetchAll(\PDO::FETCH_NUM);
+        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
     }
 
     /**

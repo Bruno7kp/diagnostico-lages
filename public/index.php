@@ -61,6 +61,9 @@ $app->post('/region/register', RegionController::class.":register");
 $app->post('/region/update', RegionController::class.":update");
 $app->post('/region/remove', RegionController::class.":remove");
 $app->get('/region/all', RegionController::class.":all");
+$app->get('/admin/region', RegionController::class.":regions");
+$app->get('/admin/region/add', RegionController::class.":add");
+$app->get('/admin/region/{id}', RegionController::class.":edit");
 
 /**
  * Categorias

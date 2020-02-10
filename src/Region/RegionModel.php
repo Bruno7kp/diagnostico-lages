@@ -112,11 +112,30 @@ class RegionModel extends Model
     }
 
     /**
+     * @param $search
+     * @param $from
+     * @param $offset
+     * @param bool $datatables
      * @return RegionModel[]
      */
-    public function getAll() {
-        $st = $this->db->prepare("SELECT id, name, description, city, created, updated FROM region ORDER BY city DESC, name");
-        $st->execute();
+    public function getAll($search, $from, $offset, $datatables = true) {
+        $st = $this->db->prepare("SELECT id, name FROM region WHERE name LIKE :search ORDER BY city DESC, name LIMIT ".$from.", ".$offset);
+        $st->execute([":search" => $search]);
+        if ($datatables)
+            return $st->fetchAll(\PDO::FETCH_NUM);
         return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+    }
+
+    /**
+     * @param string $search
+     * @return int
+     */
+    public function getTotal($search = "%%") {
+        $st = $this->db->prepare("SELECT COUNT(id) as total FROM region WHERE name LIKE :search");
+        $st->execute([":search" => $search]);
+        $res = $st->fetch(\PDO::FETCH_OBJ);
+        if ($res)
+            return intval($res->total);
+        return 0;
     }
 }

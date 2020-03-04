@@ -1,0 +1,50 @@
+{% extends "admin.html.twig" %}
+{% block title %}{{ current.id > 0 ? 'Editar ' ~ current.name : 'Adicionar indicadores' }}{% endblock %}
+
+{% block content %}
+<div class="container mt-6">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header justify-content-between">
+                    <h3 class="card-title">{{ current.id > 0 ? 'Editar ' ~ current.name : 'Adicionar indicadores' }}</h3>
+                </div>
+                <div class="card-body">
+                    <form id="indicator-group-form" action="{{ current.id > 0 ? '/indicator-group/update' : '/indicator-group/register' }}" method="post" data-send>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <input type="hidden" name="id" value="{{ current.id }}">
+                                <div class="form-group">
+                                    <label class="form-label">Nome</label>
+                                    <input type="text" required class="form-control" name="name" value="{{ current.name }}" placeholder="Nome">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label">Categoria</label>
+                                    <select class="form-control" name="categories_id">
+                                        {% for category in categories %}
+                                        <option value="{{ category.id }}" {{ category.id == current.categories_id ? 'selected' : '' }}>{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label">Descrição</label>
+                                    <textarea name="description" class="form-control" rows="3">{{ current.description }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-success" type="submit" form="indicator-group-form"><i class="fe fe-save"></i> Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

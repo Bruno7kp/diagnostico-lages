@@ -40,6 +40,11 @@ class IndicatorGroupModel extends Model
     public $updated;
 
     /**
+     * @var string
+     */
+    public $category = "";
+
+    /**
      * @return bool
      */
     public function insert() {
@@ -113,12 +118,31 @@ class IndicatorGroupModel extends Model
     }
 
     /**
+     * @param $search
+     * @param $from
+     * @param $offset
+     * @param bool $datatables
      * @return IndicatorGroupModel[]
      */
-    public function getAll() {
-        $st = $this->db->prepare("SELECT id, name, categories_id, description, description, created, updated FROM indicator_group ORDER BY name");
-        $st->execute();
+    public function getAll($search, $from, $offset, $datatables = true) {
+        $st = $this->db->prepare("SELECT i.id, i.name, c.name as category FROM indicator_group i LEFT JOIN categories c on i.categories_id = c.id WHERE i.name LIKE :search ORDER BY i.name LIMIT ".$from.", ".$offset);
+        $st->execute([":search" => $search]);
+        if ($datatables)
+            return $st->fetchAll(\PDO::FETCH_NUM);
         return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+    }
+
+    /**
+     * @param string $search
+     * @return int
+     */
+    public function getTotal($search = "%%") {
+        $st = $this->db->prepare("SELECT COUNT(id) as total FROM indicator_group WHERE name LIKE :search");
+        $st->execute([":search" => $search]);
+        $res = $st->fetch(\PDO::FETCH_OBJ);
+        if ($res)
+            return intval($res->total);
+        return 0;
     }
 
     /**

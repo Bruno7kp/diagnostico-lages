@@ -104,6 +104,9 @@ $app->post('/indicator-group/update', IndicatorGroupController::class.":update")
 $app->post('/indicator-group/remove', IndicatorGroupController::class.":remove");
 $app->get('/indicator-group/all', IndicatorGroupController::class.":all");
 $app->post('/indicator-group/category', IndicatorGroupController::class.":byCategory");
+$app->get('/admin/indicator-group', IndicatorGroupController::class.":groups");
+$app->get('/admin/indicator-group/add', IndicatorGroupController::class.":add");
+$app->get('/admin/indicator-group/{id}', IndicatorGroupController::class.":edit");
 
 /**
  * Índice

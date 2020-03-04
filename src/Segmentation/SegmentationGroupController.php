@@ -9,6 +9,9 @@ use App\Categories\CategoriesModel;
 use App\User\Roles;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class SegmentationGroupController extends Controller
 {
@@ -42,7 +45,8 @@ class SegmentationGroupController extends Controller
 
                 return $this->response($response, 201, [
                     "message" => "Grupo de segmentação cadastrado!",
-                    "data" => $group->getById($group->id)
+                    "data" => $group->getById($group->id),
+                    "redirect" => "/admin/segmentation-group"
                 ]);
             } else {
                 return $this->response($response, 500);
@@ -103,7 +107,7 @@ class SegmentationGroupController extends Controller
                         $this->log->entity = "segmentation_group";
                         $this->log->entity_id = $group->id;
                         $this->log->insert();
-                        return $this->response($response, 200, ["message" => "Grupo de segmentação removida!"]);
+                        return $this->response($response, 200, ["message" => "Grupo de segmentação removido!"]);
                     }
                     return $this->response($response, 500);
                 }
@@ -119,8 +123,69 @@ class SegmentationGroupController extends Controller
      * @return Response
      */
     public function all(Request $request, Response $response) {
-        $group = new SegmentationGroupModel();
+        if (Roles::isModOrUp($this->user)) {
+            $args = $request->getQueryParams();
+            $search = "%" . $args["search"]["value"] . "%";
+            $draw = intval($args["draw"]);
+            $from = intval($args["start"]);
+            $offset = intval($args["length"]);
+            $group = new SegmentationGroupModel();
+            $groups = $group->getAll($search, $from, $offset);
+            $total = $group->getTotal();
+            $filtered = $group->getTotal($search);
+            return $this->response($response, 200, ["draw" => $draw, "data" => $groups, "recordsTotal" => $total, "recordsFiltered" => $filtered]);
+        }
+        return $this->response($response, 403);
+    }
 
-        return $this->response($response, 200, ["data" => $group->getAll()]);
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function groups(Request $request, Response $response) {
+        if (Roles::isModOrUp($this->user)) {
+            return $this->view($request)->render($response, 'segmentation-group\groups.html.twig', []);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function add(Request $request, Response $response) {
+        if (Roles::isModOrUp($this->user)) {
+            return $this->view($request)->render($response, 'segmentation-group\group.html.twig', ["current" => new SegmentationGroupModel()]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function edit(Request $request, Response $response, $args) {
+        if (Roles::isModOrUp($this->user)) {
+            $current = new SegmentationGroupModel();
+            $current = $current->getById($args["id"]);
+            return $this->view($request)->render($response, 'segmentation-group\group.html.twig', ["current" => $current]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
     }
 }

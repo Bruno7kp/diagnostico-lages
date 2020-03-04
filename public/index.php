@@ -83,6 +83,9 @@ $app->post('/segmentation-group/register', SegmentationGroupController::class.":
 $app->post('/segmentation-group/update', SegmentationGroupController::class.":update");
 $app->post('/segmentation-group/remove', SegmentationGroupController::class.":remove");
 $app->get('/segmentation-group/all', SegmentationGroupController::class.":all");
+$app->get('/admin/segmentation-group', SegmentationGroupController::class.":groups");
+$app->get('/admin/segmentation-group/add', SegmentationGroupController::class.":add");
+$app->get('/admin/segmentation-group/{id}', SegmentationGroupController::class.":edit");
 
 /**
  * Segmentação

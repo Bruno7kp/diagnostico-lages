@@ -1,0 +1,63 @@
+{% extends "app.html.twig" %}
+{% block title %}Indicadores de Lages{% endblock %}
+
+{% block content %}
+    <div class="container mt-6">
+        {% for category in categories %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="stamp stamp-md bg-green-dark mr-3">
+                            <i class="fe fe-star"></i>
+                        </span>
+                        <div>
+                            <h4 class="m-0" id="{{ helper.slug(category.name) }}"><a href="#{{ helper.slug(category.name) }}">{{ category.name }}</a></h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <p>{{ category.description }}</p>
+                            </div>
+                        </div>
+                        <div class="card-columns">
+                            {% for group in category.groups %}
+                                <div class="card">
+                                    <div class="card-header">
+                                        <span class="stamp stamp-md bg-green-light mr-3">
+                                            <i class="fe fe-star"></i>
+                                        </span>
+                                        <div>
+                                            <h4 class="m-0"><a href="/indicador/{{ group.id }}/{{ helper.slug(group.name) }}">{{ group.name }}</a></h4>
+                                            <small class="text-muted">{{ group.description }}</small>
+                                        </div>
+                                    </div>
+                                    <table class="table card-table">
+                                        {% for k, seg_ind in group.indicators %}
+                                            {% if (k > 1 or group.indicators|length > 2) and k != 0 %}
+                                                <tr>
+                                                    <th>
+                                                        {% for segment in segmentation %}
+                                                            {% if segment.id == k %}Segmento: {{ segment.name }}{% endif %}
+                                                        {% endfor %}
+                                                    </th>
+                                                </tr>
+                                            {% endif %}
+                                            {% for indicator in seg_ind %}
+                                            <tr>
+                                                <td><a href="/indice/{{ indicator.id }}/{{ helper.slug(indicator.name) }}" class="text-inherit">{{ indicator.name }}</a></td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

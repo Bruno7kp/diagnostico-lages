@@ -1,0 +1,112 @@
+{% extends "app.html.twig" %}
+{% block title %}Regiões de Lages{% endblock %}
+
+{% block content %}
+    <div class="container mt-6">
+        <div class="row">
+            <div class="col-sm-12 col-md-8">
+                <div class="card">
+                    <div class="card-header justify-content-between">
+                        <h3 class="card-title">{{ current.name }}</h3>
+                        <div class="dropdown">
+                            <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
+                                <span class="ml-2 d-none d-lg-block">
+                                    <span class="text-default">Dados referentes ao ano de <strong>{{ period }}</strong></span>
+                                    <small class="text-muted text-right d-block mt-1">Selecione o ano</small>
+                                </span>
+                                <span class="ml-2 d-none d-lg-block text-default">
+                                    <i class="fe fe-chevron-down"></i>
+                                </span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                {% for p in  periods %}
+                                <a class="dropdown-item" href="/indice/{{ current.id }}/{{ helper.slug(current.name) }}/{{ p.indicator_period }}">
+                                    <i class="dropdown-icon fe fe-calendar"></i> {{ p.indicator_period }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table card-table table-striped">
+                        <tr>
+                            <th>Região</th>
+                            <th>{{ current.name }}</th>
+                        </tr>
+                        {% for v in values %}
+                            <tr>
+                                <td>{{ v.region_name }}</td>
+                                <td>{{ v.value }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="2">Nenhum dado encontrado.</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                {% for category in categories %}
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span class="stamp stamp-md bg-green-dark mr-3">
+                                        <i class="fe fe-star"></i>
+                                    </span>
+                                    <div>
+                                        <h4 class="m-0" id="{{ helper.slug(category.name) }}"><a href="#{{ helper.slug(category.name) }}">{{ category.name }}</a></h4>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <p>{{ category.description }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        {% for group in category.groups %}
+                                            {% if group.id == current.indicator_group_id %}
+                                            <div class="col">
+                                                <div class="card">
+                                                <div class="card-header">
+                                                    <span class="stamp stamp-md bg-green-light mr-3">
+                                                        <i class="fe fe-star"></i>
+                                                    </span>
+                                                    <div>
+                                                        <h4 class="m-0"><a href="/indicador/{{ group.id }}/{{ helper.slug(group.name) }}">{{ group.name }}</a></h4>
+                                                        <small class="text-muted">{{ group.description }}</small>
+                                                    </div>
+                                                </div>
+                                                <table class="table card-table">
+                                                    {% for k, seg_ind in group.indicators %}
+                                                        {% if (k > 1 or group.indicators|length > 2) and k != 0 %}
+                                                            <tr>
+                                                                <th>
+                                                                    {% for segment in segmentation %}
+                                                                        {% if segment.id == k %}Segmento: {{ segment.name }}{% endif %}
+                                                                    {% endfor %}
+                                                                </th>
+                                                            </tr>
+                                                        {% endif %}
+                                                        {% for indicator in seg_ind %}
+                                                            <tr>
+                                                                <td><a href="/indice/{{ indicator.id }}/{{ helper.slug(indicator.name) }}/{{ period }}" class="text-inherit">{{ indicator.name }}</a></td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </table>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

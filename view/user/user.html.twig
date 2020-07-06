@@ -1,5 +1,5 @@
 {% extends "admin.html.twig" %}
-{% block title %}{{ current.id > 0 ? 'Editar ' ~ current.name : 'Adicionar usuário' }}{% endblock %}
+{% block title %}{{ current.id > 0 ? 'Editar usuário: ' ~ current.name : 'Adicionar usuário' }}{% endblock %}
 
 {% block content %}
 <div class="container mt-6">
@@ -7,7 +7,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header justify-content-between">
-                    <h3 class="card-title">{{ current.id > 0 ? 'Editar ' ~ current.name : 'Adicionar usuário' }}</h3>
+                    <h3 class="card-title">{{ current.id > 0 ? 'Editar usuário: ' ~ current.name : 'Adicionar usuário' }}</h3>
                 </div>
                 <div class="card-body">
                     <form id="user-form" action="{{ current.id > 0 ? '/user/update' : '/user/register' }}" method="post" data-send>
@@ -29,7 +29,8 @@
                             <div class="col-md-4 col-sm-12">
                                 <div class="form-group">
                                     <label class="form-label">Nível/Permissão</label>
-                                    <select name="role" class="form-control">
+                                    <select name="role" class="form-control" required>
+                                        <option></option>
                                         <option value="data" {{ current.role == 'data' ? 'selected' : '' }}>Editor (Dados de índices)</option>
                                         <option value="mod" {{ current.role == 'mod' ? 'selected' : '' }}>Moderador (Regiões, Segmentações, etc.)</option>
                                         <option value="admin" {{ current.role == 'admin' ? 'selected' : '' }}>Administrador (Usuários, etc.)</option>

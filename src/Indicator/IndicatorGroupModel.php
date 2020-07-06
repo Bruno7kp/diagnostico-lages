@@ -45,6 +45,11 @@ class IndicatorGroupModel extends Model
     public $category = "";
 
     /**
+     * @var IndicatorModel[]
+     */
+    public $indicators = [];
+
+    /**
      * @return bool
      */
     public function insert() {
@@ -133,6 +138,15 @@ class IndicatorGroupModel extends Model
     }
 
     /**
+     * @return IndicatorModel[]
+     */
+    public function getFullList() {
+        $st = $this->db->prepare("SELECT i.id, i.name, c.name as category FROM indicator_group i LEFT JOIN categories c on i.categories_id = c.id ORDER BY i.name");
+        $st->execute();
+        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+    }
+
+    /**
      * @param string $search
      * @return int
      */
@@ -147,12 +161,21 @@ class IndicatorGroupModel extends Model
 
     /**
      * @param $id
+     * @param bool $child
      * @return IndicatorGroupModel[]
      */
-    public function getAllByCategory($id) {
+    public function getAllByCategory($id, $child = false) {
         $st = $this->db->prepare("SELECT id, name, categories_id, description, created, updated FROM indicator_group WHERE categories_id = :id ORDER BY name");
         $st->execute([":id" => $id]);
-        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+        /** @var IndicatorGroupModel[] $list */
+        $list = $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+        if ($child) {
+            $ind = new IndicatorModel();
+            foreach ($list as $item) {
+                $item->indicators = $ind->getAllByGroup($item->id);
+            }
+        }
+        return $list;
     }
 
     /**

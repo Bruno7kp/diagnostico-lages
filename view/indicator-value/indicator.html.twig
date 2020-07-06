@@ -1,0 +1,59 @@
+{% extends "admin.html.twig" %}
+{% block title %}{{ 'Editar dados de: ' ~ current.name }}{% endblock %}
+
+{% block content %}
+    <div class="container mt-6">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header justify-content-between">
+                        <h3 class="card-title">{{ 'Editar dados de: ' ~ current.name }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label class="form-label">Digite o que ano os dados se referem, aperte em 'Atualizar dados' para mostrar e editar os dados do ano selecionado.</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="hidden" id="indicator_id" value="{{ current.id }}">
+                                <div class="input-group">
+                                    <input type="text" id="indicator_period" name="indicator_period" class="form-control" value="{{ indicator_period }}">
+                                    <button type="button" title="Aperte para atualizar os dados" id="indicator_period_refresh" class="btn btn-outline-primary"><i class="fe fe-refresh-cw"></i> Atualizar dados</button>
+                                </div>
+                            </div>
+                        </div>
+                        <form id="indicator-value-form" action="/indicator-value/batch-register" method="post" data-send>
+                            <div class="card mt-2">
+                                <table class="table card-table">
+                                    <tr>
+                                        <th>Região</th>
+                                        <th>Valor do índice</th>
+                                        <th>Observação</th>
+                                    </tr>
+                                    {% for region in regions %}
+                                        <tr>
+                                            <td><strong>{{ region.name }}</strong></td>
+                                            <td>
+                                                <input type="hidden" name="values[{{ region.id }}][indicator_id]" value="{{ current.id }}">
+                                                <input type="hidden" name="values[{{ region.id }}][region_id]" value="{{ region.id }}">
+                                                <input type="hidden" name="values[{{ region.id }}][segmentation_id]" value="">
+                                                <input type="hidden" class="period-input" name="values[{{ region.id }}][indicator_period]" value="{{ indicator_period }}">
+                                                <input type="text"  data-mask="{{ current.type }}" name="values[{{ region.id }}][value]" value="" class="form-control">
+                                            </td>
+                                            <td>
+                                                <textarea name="values[{{ region.id }}][description]" class="form-control"></textarea>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-success" type="submit" form="indicator-value-form"><i class="fe fe-save"></i> Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

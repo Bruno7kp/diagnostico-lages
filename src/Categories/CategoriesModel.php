@@ -5,6 +5,8 @@ namespace App\Categories;
 
 
 use App\Base\Model;
+use App\Indicator\IndicatorGroupModel;
+use App\Indicator\IndicatorModel;
 
 class CategoriesModel extends Model
 {
@@ -32,6 +34,11 @@ class CategoriesModel extends Model
      * @var string
      */
     public $updated;
+
+    /**
+     * @var IndicatorGroupModel[]
+     */
+    public $groups = [];
 
     /**
      * @return bool
@@ -120,12 +127,21 @@ class CategoriesModel extends Model
     }
 
     /**
+     * @param bool $child
      * @return CategoriesModel[]
      */
-    public function getFullList() {
-        $st = $this->db->prepare("SELECT id, name, description, created, updated FROM categories");
+    public function getFullList($child = false) {
+        $st = $this->db->prepare("SELECT id, name, description, created, updated FROM categories ORDER BY name");
         $st->execute();
-        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+        /** @var CategoriesModel[] $list */
+        $list = $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+        if ($child) {
+            $ind = new IndicatorGroupModel();
+            foreach ($list as $item) {
+                $item->groups = $ind->getAllByCategory($item->id, $child);
+            }
+        }
+        return $list;
     }
 
     /**

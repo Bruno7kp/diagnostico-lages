@@ -152,15 +152,17 @@ class IndicatorValueModel extends Model
      */
     public function getByFilter($year = null, $indicator_id = null, $region_id = null, $segmentation_id = null) {
         $st = $this->db->prepare("SELECT 
-                id, indicator_id, region_id, segmentation_id, indicator_period, value, description, created, updated 
+                i.id, i.indicator_id, i.region_id, i.segmentation_id, i.indicator_period, i.value, i.description, i.created, i.updated,
+                r.city, r.name as region_name, r.description as region_description
             FROM 
-                indicator_value 
+                indicator_value i
+                LEFT JOIN region r on i.region_id = r.id
             WHERE
-                (:indicator_id IS NULL OR indicator_id = :indicator_id) AND
-                (:region_id IS NULL OR region_id = :region_id) AND
-                (:segmentation_id IS NULL OR indicator_id = :segmentation_id) AND
-                (:period IS NULL OR indicator_period = :period)
-            ORDER BY updated DESC");
+                (:indicator_id IS NULL OR i.indicator_id = :indicator_id) AND
+                (:region_id IS NULL OR i.region_id = :region_id) AND
+                (:segmentation_id IS NULL OR i.indicator_id = :segmentation_id) AND
+                (:period IS NULL OR i.indicator_period = :period)
+            ORDER BY r.city DESC, r.name, i.updated DESC");
         $st->execute([
             ":indicator_id" => $indicator_id,
             ":region_id" => $region_id,
@@ -177,8 +179,14 @@ class IndicatorValueModel extends Model
     public function batchInsert($values) {
         $this->db->beginTransaction();
         try {
+            $rm = $this->db->prepare("DELETE FROM indicator_value WHERE indicator_id = :indicator_id AND region_id = :region_id AND indicator_period = :period");
             $st = $this->db->prepare("INSERT INTO indicator_value (indicator_id, region_id, segmentation_id, indicator_period, value, description) VALUES (:indicator_id, :region_id, :segmentation_id, :period, :value, :description)");
             foreach ($values as $value) {
+                $rm->execute([
+                    ":indicator_id" => $value->indicator_id,
+                    ":region_id" => $value->region_id,
+                    ":period" => $value->indicator_period
+                ]);
                 $st->execute([
                     ":indicator_id" => $value->indicator_id,
                     ":region_id" => $value->region_id,
@@ -227,5 +235,20 @@ class IndicatorValueModel extends Model
             $this->db->rollBack();
             return false;
         }
+    }
+
+    /**
+     * @param $values
+     * @return IndicatorValueModel[]
+     */
+    public function arrayByRegionId($values) {
+        $list = [];
+        /**
+         * @var IndicatorValueModel $value
+         */
+        foreach ($values as $value) {
+            $list[$value->region_id] = $value;
+        }
+        return $list;
     }
 }

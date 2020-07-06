@@ -1,5 +1,5 @@
 {% extends "admin.html.twig" %}
-{% block title %}{{ current.id > 0 ? 'Editar ' ~ current.name : 'Adicionar indicadores' }}{% endblock %}
+{% block title %}{{ current.id > 0 ? 'Editar indicador: ' ~ current.name : 'Adicionar indicadores' }}{% endblock %}
 
 {% block content %}
 <div class="container mt-6">
@@ -7,7 +7,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header justify-content-between">
-                    <h3 class="card-title">{{ current.id > 0 ? 'Editar ' ~ current.name : 'Adicionar indicadores' }}</h3>
+                    <h3 class="card-title">{{ current.id > 0 ? 'Editar indicador: ' ~ current.name : 'Adicionar indicadores' }}</h3>
                 </div>
                 <div class="card-body">
                     <form id="indicator-group-form" action="{{ current.id > 0 ? '/indicator-group/update' : '/indicator-group/register' }}" method="post" data-send>
@@ -22,7 +22,8 @@
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
                                     <label class="form-label">Categoria</label>
-                                    <select class="form-control" name="categories_id">
+                                    <select class="form-control" name="categories_id" required>
+                                        <option></option>
                                         {% for category in categories %}
                                         <option value="{{ category.id }}" {{ category.id == current.categories_id ? 'selected' : '' }}>{{ category.name }}</option>
                                         {% endfor %}

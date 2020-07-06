@@ -50,12 +50,68 @@ const Auth = {
 const Manager = {
     start: function() {
         this.send();
+        this.loadData();
+    },
+    loadData: function() {
+        // Campo para definir o ano
+        let input = document.querySelector("#indicator_period");
+        if (input === null)
+            return;
+        // Campos 'hidden' onde o ano deveser atualizado
+        let periodsInput = document.querySelectorAll(".period-input");
+        // Formulário
+        let form = document.querySelector("#indicator-value-form");
+        // Todos os campos de valor e descrição, que devem ser atualizados conforme o ano
+        let formInputs = form.querySelectorAll("input[type=text], textarea");
+        if (input) {
+            // Id do índice
+            let id = document.querySelector("#indicator_id").value;
+            // Botão para atualizar o ano
+            let refresh = document.querySelector("#indicator_period_refresh");
+            refresh.addEventListener("click", () => {
+                let wait = Swal.fire({
+                    icon: 'info',
+                    title: 'Aguarde...',
+                    text: '',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                });
+                for (let i = 0; i < periodsInput.length; i++) {
+                    periodsInput[i].value = input.value;
+                }
+                for (let i = 0; i < formInputs.length; i++) {
+                    formInputs[i].value = "";
+                }
+                fetch("/indicator-value/" + id + "/" + input.value).then((response) => {
+                    wait.close();
+                    response.json().then((values) => {
+                        for (let j = 0; j < values.length; j++) {
+                            let val = values[j];
+                            let inputText = document.querySelector(["[name='values[" + val.region_id + "][value]']"]);
+                            if (inputText)
+                                inputText.value = val.value;
+                            let areaText = document.querySelector(["[name='values[" + val.region_id + "][description]']"]);
+                            if (areaText)
+                                areaText.value = val.description;
+                        }
+                    });
+                });
+            });
+            refresh.click();
+        }
     },
     send: function() {
         let forms = document.querySelectorAll("form[data-send]");
         for (let i = 0; i < forms.length; i++) {
             forms[i].addEventListener("submit", (event) => {
                 event.preventDefault();
+                let wait = Swal.fire({
+                    icon: 'info',
+                    title: 'Aguarde...',
+                    text: '',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                });
                 let form = forms[i];
                 let data = new FormData(form);
                 fetch(form.action, {
@@ -66,6 +122,7 @@ const Manager = {
                     },
                     body: data,
                 }).then((response) => {
+                    wait.close();
                     response.json().then((j) => {
                         if (response.status === 200 || response.status === 201) {
                             Swal.fire({

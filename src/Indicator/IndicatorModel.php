@@ -8,6 +8,7 @@ use App\Base\Model;
 use App\Indicator\IndicatorGroupModel;
 use App\Segmentation\SegmentationGroupModel;
 use App\Segmentation\SegmentationModel;
+use Cassandra\Date;
 
 class IndicatorModel extends Model
 {
@@ -70,7 +71,7 @@ class IndicatorModel extends Model
             foreach ($this->segmentations as $id) {
                 $sst->execute([
                     ":indicator_id" => $this->id,
-                    "segmentation_group_id" => $id
+                    ":segmentation_group_id" => $id
                 ]);
             }
             $this->db->commit();
@@ -147,11 +148,21 @@ class IndicatorModel extends Model
     }
 
     /**
+     * @param $search
+     * @param $from
+     * @param $offset
+     * @param bool $datatables
      * @return IndicatorModel[]
      */
-    public function getAll() {
-        $st = $this->db->prepare("SELECT id, name, indicator_group_id, type, description, created, updated FROM indicator ORDER BY name");
-        $st->execute();
+    public function getAll($search, $from, $offset, $datatables = true) {
+        $st = $this->db->prepare("SELECT i.id, i.name, ig.name as indicator_group, c.name as category, i.indicator_group_id, ig.categories_id, i.type, i.description, i.created, i.updated 
+                FROM indicator i 
+                    LEFT JOIN indicator_group ig on i.indicator_group_id = ig.id    
+                    LEFT JOIN categories c on ig.categories_id = c.id
+                WHERE i.name LIKE :search OR ig.name LIKE :search OR c.name LIKE :search ORDER BY i.name LIMIT ".$from.", ".$offset);
+        $st->execute([":search" => $search]);
+        if ($datatables)
+            return $st->fetchAll(\PDO::FETCH_NUM);
         $list = $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
         foreach ($list as $item) {
             if ($item instanceof IndicatorModel)
@@ -161,8 +172,30 @@ class IndicatorModel extends Model
     }
 
     /**
-     * @param $id
      * @return IndicatorModel[]
+     */
+    public function getFullList() {
+        $st = $this->db->prepare("SELECT i.id, i.name, ig.name as indicator_group, i.indicator_group_id, i.type, i.description, i.created, i.updated FROM indicator i LEFT JOIN indicator_group ig on i.indicator_group_id = ig.id ORDER BY i.name");
+        $st->execute();
+        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+    }
+
+    /**
+     * @param string $search
+     * @return int
+     */
+    public function getTotal($search = "%%") {
+        $st = $this->db->prepare("SELECT COUNT(id) as total FROM indicator WHERE name LIKE :search");
+        $st->execute([":search" => $search]);
+        $res = $st->fetch(\PDO::FETCH_OBJ);
+        if ($res)
+            return intval($res->total);
+        return 0;
+    }
+
+    /**
+     * @param $id
+     * @return IndicatorModel[][]
      */
     public function getAllByGroup($id) {
         $st = $this->db->prepare("SELECT id, name, indicator_group_id, type, description, created, updated FROM indicator WHERE indicator_group_id = :id ORDER BY name");
@@ -172,7 +205,7 @@ class IndicatorModel extends Model
             if ($item instanceof IndicatorModel)
                 $item->fillSegmentations();
         }
-        return $list;
+        return $this->arrayBySegmentationIndex($list);
     }
 
     /**
@@ -209,5 +242,36 @@ class IndicatorModel extends Model
             }
         }
         return $list;
+    }
+
+    /**
+     * @param IndicatorModel[] $array
+     * @return IndicatorModel[][]
+     */
+    public function arrayBySegmentationIndex($array) {
+        $list = [0 => []];
+        $id = 0;
+        foreach ($array as $item) {
+            if ($item->segmentations) {
+                $id = $item->segmentations[0];
+            }
+            if (!array_key_exists($id, $list))
+                $list[$id] = [];
+            $list[$id][] = $item;
+        }
+        return $list;
+    }
+
+    /**
+     * @return array
+     */
+    public function periods() {
+        $st = $this->db->prepare("SELECT indicator_period FROM indicator_value WHERE indicator_id = :id GROUP BY indicator_period ORDER BY indicator_period DESC");
+        $st->execute([":id" => $this->id]);
+        $fill = $st->fetchAll(\PDO::FETCH_ASSOC);
+        if ($fill)
+            return $fill;
+        $now = new \DateTime();
+        return [["indicator_period" => $now->format("Y")]];
     }
 }

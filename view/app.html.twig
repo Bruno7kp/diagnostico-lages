@@ -50,11 +50,11 @@
     {% block page %}
     <div class="flex-fill">
         {% block top %}
-            <div class="header dark-header py-4">
+            <div class="header py-4">
                 <div class="container">
                     <div class="d-flex">
-                        <a class="header-brand" href="/admin">
-                            Área administrativa - Diagnóstico Lages
+                        <a class="header-brand" href="/">
+                            Diagnóstico de Lages
                         </a>
                         <div class="d-flex order-lg-2 ml-auto">
                             {% if user.id > 0 %}
@@ -69,8 +69,8 @@
                                         </span>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                        <a class="dropdown-item" href="/admin/user/{{ user.id }}">
-                                            <i class="dropdown-icon fe fe-user"></i> Perfil
+                                        <a class="dropdown-item" href="/admin">
+                                            <i class="dropdown-icon fe fe-log-in"></i> Área administrativa
                                         </a>
                                         <div class="dropdown-divider"></div>
 
@@ -80,7 +80,9 @@
                                     </div>
                                 </div>
                             {% else %}
-
+                                <a href="/login" class="nav-link pr-0 leading-none text-secondary">
+                                    <i class="dropdown-icon fe fe-log-in"></i> Login
+                                </a>
                             {% endif %}
                         </div>
                         <a href="#" class="header-toggler d-lg-none ml-3 ml-lg-0" data-toggle="collapse" data-target="#headerMenuCollapse">
@@ -91,52 +93,20 @@
             </div>
         {% endblock %}
         {% block menu %}
-            <div class="header dark-header collapse d-lg-flex p-0" id="headerMenuCollapse">
+            <div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">
                 <div class="container">
                     <div class="row align-items-center">
                         <div class="col-lg order-lg-first">
                             <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                                 <li class="nav-item">
-                                    <a href="/" class="nav-link"><i class="fe fe-home"></i> Página Inicial</a>
+                                    <a href="/" class="nav-link {{ controller == 'indicator' ? 'active' : '' }}"><i class="fe fe-bar-chart-2"></i> Indicadores</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/admin" class="nav-link {{ controller == 'admin' ? 'active' : '' }}"><i class="fe fe-monitor"></i> Dashboard</a>
+                                    <a href="/regioes" class="nav-link {{ controller == 'region' ? 'active' : '' }}">
+                                        <i class="fe fe-map-pin"></i> Diagnóstico por regiões da cidade
+                                    </a>
                                 </li>
-                                {% if helper.role.isModOrUp(user) %}
-                                <li class="nav-item">
-                                    <a href="/admin/region" class="nav-link {{ controller == 'region' ? 'active' : '' }}"><i class="fe fe-map-pin"></i> Regiões</a>
-                                </li>
-                                {% endif %}
-                                {% if helper.role.isModOrUp(user) %}
-                                <li class="nav-item">
-                                    <a href="/admin/segmentation-group" class="nav-link {{ controller == 'segmentationgroup' ? 'active' : '' }}"><i class="fe fe-pie-chart"></i> Segmentações</a>
-                                </li>
-                                {% endif %}
-                                {% if helper.role.isModOrUp(user) %}
-                                <li class="nav-item">
-                                    <a href="/admin/categories" class="nav-link {{ controller == 'categories' ? 'active' : '' }}"><i class="fe fe-box"></i> Categorias</a>
-                                </li>
-                                {% endif %}
-                                {% if helper.role.isModOrUp(user) %}
-                                <li class="nav-item">
-                                    <a href="/admin/indicator-group" class="nav-link {{ controller == 'indicatorgroup' ? 'active' : '' }}"><i class="fe fe-bar-chart-2"></i> Indicadores</a>
-                                </li>
-                                {% endif %}
-                                {% if helper.role.isDataOrUp(user) %}
-                                <li class="nav-item">
-                                    <a href="/admin/indicator" class="nav-link {{ controller == 'indicator' or controller == 'indicatorvalue' ? 'active' : '' }}"><i class="fe fe-check-square"></i> Dados</a>
-                                </li>
-                                {% endif %}
-                                {% if helper.role.isAdmin(user) %}
-                                <li class="nav-item">
-                                    <a href="/admin/user" class="nav-link {{ controller == 'user' ? 'active' : '' }}"><i class="fe fe-users"></i> Usuários</a>
-                                </li>
-                                {% endif %}
-                                {% if helper.role.isAdmin(user) %}
-                                <li class="nav-item">
-                                    <a href="/admin/logs" class="nav-link {{ controller == 'log' ? 'active' : '' }}"><i class="fe fe-file-text"></i> Logs</a>
-                                </li>
-                                {% endif %}
+
                             </ul>
                         </div>
                     </div>
@@ -156,16 +126,16 @@
                                 <div class="col-md-4">
                                     <div class="card">
                                         <div class="card-header">
-                                            <i class="fe fe-info"></i> <h3 class="card-title ml-2">Cadastrar ou editar dados</h3>
+                                            <h3 class="card-title">Adicionar dados</h3>
                                         </div>
                                         <div class="card-body">
-                                            <p><i class="fe fe-chevron-right"></i> Acesse o menu <a href="/admin/indicator" class="btn btn-sm btn-dark"><i class="fe fe-check-square"></i> Dados</a></p>
-                                            <p><i class="fe fe-chevron-right"></i> Selecione o índice que deseja inserir ou atualizar dados apertando no botão <a href="/admin/indicator" class="btn btn-secondary btn-sm"><i class="fe fe-plus-square"></i> Dados</a></p>
+                                            Acesse o menu <a href="/admin/indicator" class="btn btn-sm btn-dark"><i class="fe fe-check-square"></i> Dados</a>.<br/>
+                                            Selecione o índice que deseja inserir ou atualizar dados apertando no botão <a href="/admin/indicator" class="btn btn-secondary btn-sm"><i class="fe fe-plus-square"></i> Dados</a>.
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
+
                         </div>
                     </div>
                 </div>

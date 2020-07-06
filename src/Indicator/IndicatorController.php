@@ -6,9 +6,14 @@ namespace App\Indicator;
 
 use App\Base\Controller;
 use App\Categories\CategoriesModel;
+use App\Region\RegionModel;
+use App\Segmentation\SegmentationGroupModel;
 use App\User\Roles;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class IndicatorController extends Controller
 {
@@ -153,9 +158,16 @@ class IndicatorController extends Controller
      * @return Response
      */
     public function all(Request $request, Response $response) {
+        $args = $request->getQueryParams();
+        $search = "%" . $args["search"]["value"] . "%";
+        $draw = intval($args["draw"]);
+        $from = intval($args["start"]);
+        $offset = intval($args["length"]);
         $indicator = new IndicatorModel();
-
-        return $this->response($response, 200, ["data" => $indicator->getAll()]);
+        $indicators = $indicator->getAll($search, $from, $offset);
+        $total = $indicator->getTotal();
+        $filtered = $indicator->getTotal($search);
+        return $this->response($response, 200, ["draw" => $draw, "data" => $indicators, "recordsTotal" => $total, "recordsFiltered" => $filtered]);
     }
 
     /**
@@ -173,5 +185,136 @@ class IndicatorController extends Controller
         } else {
             return $this->response($response, 404);
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function indicators(Request $request, Response $response) {
+        if (Roles::isDataOrUp($this->user)) {
+            return $this->view($request)->render($response, 'indicator\indicators.html.twig', []);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function add(Request $request, Response $response) {
+        if (Roles::isModOrUp($this->user)) {
+            $groups = new IndicatorGroupModel();
+            $groups = $groups->getFullList();
+            $types = IndicatorType::get();
+            $segmentations = new SegmentationGroupModel();
+            $segmentations = $segmentations->getFullList();
+            return $this->view($request)->render($response, 'indicator\indicator.html.twig', [
+                "current" => new IndicatorModel(),
+                "groups" => $groups,
+                "types" => $types,
+                "segmentations" => $segmentations,
+            ]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function edit(Request $request, Response $response, $args) {
+        if (Roles::isModOrUp($this->user)) {
+            $current = new IndicatorModel();
+            $current = $current->getById($args["id"]);
+            $groups = new IndicatorGroupModel();
+            $groups = $groups->getFullList();
+            $types = IndicatorType::get();
+            $segmentations = new SegmentationGroupModel();
+            $segmentations = $segmentations->getFullList();
+            return $this->view($request)->render($response, 'indicator\indicator.html.twig', [
+                "current" => $current,
+                "groups" => $groups,
+                "types" => $types,
+                "segmentations" => $segmentations,
+            ]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function indicadores(Request $request, Response $response) {
+        $category = new CategoriesModel();
+        $categories = $category->getFullList(true);
+        $seg = new SegmentationGroupModel();
+        $segmentations = $seg->getFullList();
+        return $this->view($request)->render($response, 'indicator\public.indicators.html.twig', ["categories" => $categories, "segmentation" => $segmentations]);
+    }
+
+    public function indicador() {
+
+    }
+
+
+    public function indice(Request $request, Response $response, $args) {
+        if (!array_key_exists("id", $args))
+            return $this->response($response, 404);
+
+        $indicator = new IndicatorModel();
+        $indicator = $indicator->getById($args["id"]);
+        $periods = $indicator->periods();
+        $period = $periods[0]["indicator_period"];
+
+        if (array_key_exists("period", $args))
+            $period = $args["period"];
+
+        $region = new RegionModel();
+        $regions = $region->getFullList();
+        $val = new IndicatorValueModel();
+        $vals = $val->getByFilter($period, $indicator->id);
+
+        $group = new IndicatorGroupModel();
+        $group = $group->getById($indicator->indicator_group_id);
+        $groups = $group->getAllByCategory($group->categories_id, true);
+        $category = new CategoriesModel();
+        $category = $category->getById($group->categories_id);
+        $category->groups = $groups;
+        $seg = new SegmentationGroupModel();
+        $segmentations = $seg->getFullList();
+
+
+        return $this->view($request)->render($response, 'indicator\public.indexes.html.twig', [
+            "current" => $indicator,
+            "regions" => $regions,
+            "period" => $period,
+            "periods" => $periods,
+            "values" => $vals,
+            "categories" => [$category],
+            "segmentation" => $segmentations
+        ]);
     }
 }

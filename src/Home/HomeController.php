@@ -23,6 +23,6 @@ class HomeController extends Controller
     public function index(Request $request, Response $response) {
         $view = Twig::fromRequest($request);
         $view->getEnvironment()->addGlobal('user', $this->user);
-        return $this->view($request)->render($response, 'admin.html.twig', []);
+        return $this->view($request)->render($response, 'app.html.twig', []);
     }
 }

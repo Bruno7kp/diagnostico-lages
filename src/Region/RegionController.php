@@ -192,4 +192,19 @@ class RegionController extends Controller
         }
         return $this->response($response->withHeader('Location', '/admin'), 302);
     }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function regioes(Request $request, Response $response) {
+        $region = new RegionModel();
+        $regions = $region->getFullList();
+        return $this->view($request)->render($response, 'region\public.region.html.twig', ["regions" => $regions]);
+    }
 }

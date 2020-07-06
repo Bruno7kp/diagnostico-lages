@@ -1,5 +1,5 @@
 {% extends "admin.html.twig" %}
-{% block title %}{{ current.id > 0 ? 'Editar ' ~ current.name : 'Adicionar grupo de segmentação' }}{% endblock %}
+{% block title %}{{ current.id > 0 ? 'Editar índice' ~ current.name : 'Adicionar grupo de segmentação' }}{% endblock %}
 
 {% block content %}
 <div class="container mt-6">
@@ -7,7 +7,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header justify-content-between">
-                    <h3 class="card-title">{{ current.id > 0 ? 'Editar ' ~ current.name : 'Adicionar grupo de segmentação' }}</h3>
+                    <h3 class="card-title">{{ current.id > 0 ? 'Editar grupo de segmentação: ' ~ current.name : 'Adicionar grupo de segmentação' }}</h3>
                 </div>
                 <div class="card-body">
                     <form id="segmentation-group-form" action="{{ current.id > 0 ? '/segmentation-group/update' : '/segmentation-group/register' }}" method="post" data-send>

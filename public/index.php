@@ -27,7 +27,27 @@ $dotenv->load();
 $app = AppFactory::create();
 
 $twig = Twig::create(dirname(__DIR__) . '/view', ['cache' => getenv('ENV') === 'prod' ? dirname(__DIR__) . '/cache' : false]);
+class Project_Twig_Extension extends \Twig\Extension\AbstractExtension implements \Twig\Extension\GlobalsInterface {
+    public function getGlobals(): array
+    {
+        return [
+            'helper' => new \App\Base\Helper(),
+        ];
+    }
+}
+$twig->addExtension(new Project_Twig_Extension());
 $app->add(TwigMiddleware::create($app, $twig));
+
+/**
+ * Site
+ */
+$app->get('/', IndicatorController::class.":indicadores");
+$app->get('/regioes', RegionController::class.":regioes");
+$app->get('/indicadores', IndicatorController::class.":indicadores");
+$app->get('/regiao/{id}/{slug}', RegionController::class.":regiao");
+$app->get('/indice/{id}/{slug}', IndicatorController::class.":indice");
+$app->get('/indice/{id}/{slug}/{period}', IndicatorController::class.":indice");
+$app->get('/indicador/{id}/{slug}', IndicatorController::class.":indicador");
 
 /**
  * Admin
@@ -116,6 +136,9 @@ $app->post('/indicator/update', IndicatorController::class.":update");
 $app->post('/indicator/remove', IndicatorController::class.":remove");
 $app->get('/indicator/all', IndicatorController::class.":all");
 $app->post('/indicator/group', IndicatorController::class.":byGroup");
+$app->get('/admin/indicator', IndicatorController::class.":indicators");
+$app->get('/admin/indicator/add', IndicatorController::class.":add");
+$app->get('/admin/indicator/{id}', IndicatorController::class.":edit");
 
 /**
  * Valores dos índices
@@ -125,6 +148,8 @@ $app->post('/indicator-value/update', IndicatorValueController::class.":update")
 $app->post('/indicator-value/batch-register', IndicatorValueController::class.":batchRegister");
 $app->post('/indicator-value/batch-update', IndicatorValueController::class.":batchUpdate");
 $app->post('/indicator-value/search', IndicatorValueController::class.":search");
+$app->get('/admin/indicator-value/{id}', IndicatorValueController::class.":indicator");
+$app->get('/indicator-value/{id}/{period}', IndicatorValueController::class.":indicatorValues");
 
 /**
  * Logs
@@ -142,7 +167,7 @@ class MyCustomErrorRenderer implements ErrorRendererInterface
     public function __invoke(Throwable $exception, bool $displayErrorDetails): string
     {
         if ($displayErrorDetails)
-            return $exception->getTraceAsString();
+            return $exception->getMessage();
         return $exception->getMessage();
     }
 }

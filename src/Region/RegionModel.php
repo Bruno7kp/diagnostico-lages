@@ -127,6 +127,15 @@ class RegionModel extends Model
     }
 
     /**
+     * @return RegionModel[]
+     */
+    public function getFullList() {
+        $st = $this->db->prepare("SELECT id, name, description, city, created, updated FROM region ORDER BY city DESC, name");
+        $st->execute();
+        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+    }
+
+    /**
      * @param string $search
      * @return int
      */

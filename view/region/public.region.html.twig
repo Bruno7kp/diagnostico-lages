@@ -1,0 +1,46 @@
+{% extends "app.html.twig" %}
+{% block title %}Regiões de Lages{% endblock %}
+
+{% block content %}
+    <div class="container mt-6">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header justify-content-between">
+                        <h3 class="card-title">Diagnóstico por regiões</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <p>Selecione uma das regiões abaixo.</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% for region in regions %}
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="card p-3">
+                                    <div class="d-flex align-items-center">
+                                        {% if region.city %}
+                                        <span class="stamp stamp-md bg-blue-dark mr-3">
+                                          <i class="fe fe-star"></i>
+                                        </span>
+                                        {% else %}
+                                        <span class="stamp stamp-md bg-blue-light mr-3">
+                                          <i class="fe fe-map-pin"></i>
+                                        </span>
+                                        {% endif %}
+                                        <div>
+                                            <h4 class="m-0"><a href="/regiao/{{ region.id }}/{{ helper.slug(region.name) }}">{{ region.name }}</a></h4>
+                                            <small class="text-muted">{{ region.description }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

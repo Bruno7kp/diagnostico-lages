@@ -120,6 +120,15 @@ class SegmentationGroupModel extends Model
     }
 
     /**
+     * @return SegmentationGroupModel[]
+     */
+    public function getFullList() {
+        $st = $this->db->prepare("SELECT id, name, description, created, updated FROM segmentation_group ORDER BY name");
+        $st->execute();
+        return $st->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+    }
+
+    /**
      * @param string $search
      * @return int
      */

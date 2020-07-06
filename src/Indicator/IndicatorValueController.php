@@ -7,10 +7,14 @@ namespace App\Indicator;
 use App\Base\Controller;
 use App\Categories\CategoriesModel;
 use App\Region\RegionModel;
+use App\Segmentation\SegmentationGroupModel;
 use App\Segmentation\SegmentationModel;
 use App\User\Roles;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class IndicatorValueController extends Controller
 {
@@ -312,5 +316,61 @@ class IndicatorValueController extends Controller
             $segmentation_id = $body["segmentation_id"];
         }
         return $this->response($response, 200, ["data" => $value->getByFilter($year, $indicator_id, $region_id, $segmentation_id)]);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function indicator(Request $request, Response $response, $args) {
+        if (Roles::isDataOrUp($this->user)) {
+            $now = new \DateTime();
+            $year = $now->format("Y");
+            $current = new IndicatorModel();
+            $current = $current->getById($args["id"]);
+            $groups = new IndicatorGroupModel();
+            $groups = $groups->getFullList();
+            $types = IndicatorType::get();
+            $segmentations = new SegmentationGroupModel();
+            $segmentations = $segmentations->getFullList();
+            $regions = new RegionModel();
+            $regions = $regions->getFullList();
+            $values = new IndicatorValueModel();
+            $values = $values->arrayByRegionId($values->getByFilter($year, $current->id));
+            return $this->view($request)->render($response, 'indicator-value\indicator.html.twig', [
+                "current" => $current,
+                "groups" => $groups,
+                "types" => $types,
+                "segmentations" => $segmentations,
+                "regions" => $regions,
+                "indicator_period" => $year,
+                "values" => $values
+            ]);
+        }
+        return $this->response($response->withHeader('Location', '/admin'), 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
+    public function indicatorValues(Request $request, Response $response, $args) {
+        if (array_key_exists("period", $args) && array_key_exists("id", $args)) {
+            $year = $args["period"];
+            $current = new IndicatorModel();
+            $current = $current->getById($args["id"]);
+            $values = new IndicatorValueModel();
+            $values = $values->getByFilter($year, $current->id);
+            return $this->response($response, 200, $values);
+        }
+        return $this->response($response, 403);
     }
 }

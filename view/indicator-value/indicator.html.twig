@@ -38,7 +38,7 @@
                                                 <input type="hidden" name="values[{{ region.id }}][region_id]" value="{{ region.id }}">
                                                 <input type="hidden" name="values[{{ region.id }}][segmentation_id]" value="">
                                                 <input type="hidden" class="period-input" name="values[{{ region.id }}][indicator_period]" value="{{ indicator_period }}">
-                                                <input type="text"  data-mask="{{ current.type }}" name="values[{{ region.id }}][value]" value="" class="form-control">
+                                                <input type="text"  data-has-mask="{{ current.type }}" name="values[{{ region.id }}][value]" value="" class="form-control">
                                             </td>
                                             <td>
                                                 <textarea name="values[{{ region.id }}][description]" class="form-control"></textarea>

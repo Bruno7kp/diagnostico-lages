@@ -188,11 +188,11 @@
             require(['selectize', 'jquery', 'input-mask'], function(selectize, $) {
                 $("select[multiple]").selectize({placeholder: 'Selecione uma ou mais opções',plugins: ['remove_button'],});
                 $("select:not([multiple])").selectize({placeholder: 'Selecione uma opção',});
-                $("[data-mask=percent]").mask('##0,00%', {reverse: true});
-                $("[data-mask=int_h]").mask('00000000000');
-                $("[data-mask=int_l]").mask('00000000000');
-                $("[data-mask=float_h]").mask('00000000000,00');
-                $("[data-mask=float_l]").mask('00000000000,00');
+                $("[data-has-mask=percent]").mask('##0,00%', {reverse: true});
+                $("[data-has-mask=int_h]").mask('00000000000');
+                $("[data-has-mask=int_l]").mask('00000000000');
+                $("[data-has-mask=float_h]").mask('00000000000,00');
+                $("[data-has-mask=float_l]").mask('00000000000,00');
             });
         </script>
     {% endblock %}

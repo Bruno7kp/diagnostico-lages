@@ -31,15 +31,17 @@
                         <tr>
                             <th>Região</th>
                             <th>{{ current.name }}</th>
+                            <th>Observações</th>
                         </tr>
                         {% for v in values %}
                             <tr>
                                 <td>{{ v.region_name }}</td>
                                 <td>{{ v.value }}</td>
+                                <td><small class="">{{ v.description }}</small></td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="2">Nenhum dado encontrado.</td>
+                                <td colspan="3">Nenhum dado encontrado.</td>
                             </tr>
                         {% endfor %}
                     </table>
@@ -55,7 +57,7 @@
                                         <i class="fe fe-star"></i>
                                     </span>
                                     <div>
-                                        <h4 class="m-0" id="{{ helper.slug(category.name) }}"><a href="#{{ helper.slug(category.name) }}">{{ category.name }}</a></h4>
+                                        <h4 class="m-0" id="{{ helper.slug(category.name) }}"><a href="/#{{ helper.slug(category.name) }}">{{ category.name }}</a></h4>
                                     </div>
                                 </div>
                                 <div class="card-body">

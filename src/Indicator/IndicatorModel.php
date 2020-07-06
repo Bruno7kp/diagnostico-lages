@@ -5,10 +5,8 @@ namespace App\Indicator;
 
 
 use App\Base\Model;
-use App\Indicator\IndicatorGroupModel;
+use App\Region\RegionModel;
 use App\Segmentation\SegmentationGroupModel;
-use App\Segmentation\SegmentationModel;
-use Cassandra\Date;
 
 class IndicatorModel extends Model
 {
@@ -52,6 +50,11 @@ class IndicatorModel extends Model
      * @var array
      */
     public $segmentations = [];
+
+    /**
+     * @var array
+     */
+    public $regions = [];
 
     /**
      * @return bool
@@ -273,5 +276,22 @@ class IndicatorModel extends Model
             return $fill;
         $now = new \DateTime();
         return [["indicator_period" => $now->format("Y")]];
+    }
+
+    public function getRegionsValue($year) {
+        $regions = new RegionModel();
+        $regions = $regions->getFullList();
+        $values = new IndicatorValueModel();
+        foreach ($regions as $region) {
+            /** @var null|IndicatorValueModel[] $res */
+            $res = $values->getByFilter($year, $this->id, $region->id);
+            if ($res) {
+                $this->regions[] = $res[0];
+            } else {
+                $this->regions[] = new IndicatorValueModel();
+            }
+        }
+
+        return $this->regions;
     }
 }

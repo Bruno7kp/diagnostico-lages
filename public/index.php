@@ -48,6 +48,7 @@ $app->get('/regiao/{id}/{slug}', RegionController::class.":regiao");
 $app->get('/indice/{id}/{slug}', IndicatorController::class.":indice");
 $app->get('/indice/{id}/{slug}/{period}', IndicatorController::class.":indice");
 $app->get('/indicador/{id}/{slug}', IndicatorController::class.":indicador");
+$app->get('/indicador/{id}/{slug}/{period}', IndicatorController::class.":indicador");
 
 /**
  * Admin

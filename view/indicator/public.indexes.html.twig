@@ -7,7 +7,10 @@
             <div class="col-sm-12 col-md-8">
                 <div class="card">
                     <div class="card-header justify-content-between">
-                        <h3 class="card-title">{{ current.name }}</h3>
+                        <span>
+                            <h3 class="card-title">{{ current.name }}</h3>
+                            <small class="">{{ current.description }}</small>
+                        </span>
                         <div class="dropdown">
                             <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
                                 <span class="ml-2 d-none d-lg-block">
@@ -35,7 +38,11 @@
                         </tr>
                         {% for v in values %}
                             <tr>
-                                <td>{{ v.region_name }}</td>
+                                {% if v.region_description|length > 0 %}
+                                    <td><abbr title="{{ v.region_description }}">{{ v.region_name }}</abbr></td>
+                                {% else %}
+                                    <td>{{ v.region_name }}</td>
+                                {% endif %}
                                 <td>{{ v.value }}</td>
                                 <td><small class="">{{ v.description }}</small></td>
                             </tr>
@@ -76,7 +83,7 @@
                                                         <i class="fe fe-star"></i>
                                                     </span>
                                                     <div>
-                                                        <h4 class="m-0"><a href="/indicador/{{ group.id }}/{{ helper.slug(group.name) }}">{{ group.name }}</a></h4>
+                                                        <h4 class="m-0"><a href="/indicador/{{ group.id }}/{{ helper.slug(group.name) }}/{{ period }}">{{ group.name }}</a></h4>
                                                         <small class="text-muted">{{ group.description }}</small>
                                                     </div>
                                                 </div>

@@ -6,6 +6,8 @@ namespace App\Indicator;
 
 use App\Base\Model;
 use App\Categories\CategoriesModel;
+use App\Region\RegionModel;
+use App\Segmentation\SegmentationGroupModel;
 
 class IndicatorGroupModel extends Model
 {
@@ -48,6 +50,11 @@ class IndicatorGroupModel extends Model
      * @var IndicatorModel[]
      */
     public $indicators = [];
+
+    /**
+     * @var SegmentationGroupModel[]
+     */
+    public $segmentations = [];
 
     /**
      * @return bool
@@ -184,5 +191,37 @@ class IndicatorGroupModel extends Model
     public function getCategory() {
         $model = new CategoriesModel();
         return $model->getById($this->categories_id);
+    }
+
+    /**
+     * @return array
+     */
+    public function periods() {
+        $st = $this->db->prepare("SELECT v.indicator_period FROM indicator_value v LEFT JOIN indicator i on v.indicator_id = i.id WHERE i.indicator_group_id = :id GROUP BY v.indicator_period ORDER BY v.indicator_period DESC");
+        $st->execute([":id" => $this->id]);
+        $fill = $st->fetchAll(\PDO::FETCH_ASSOC);
+        if ($fill)
+            return $fill;
+        $now = new \DateTime();
+        return [["indicator_period" => $now->format("Y")]];
+    }
+
+    public function getByFilter($year = null, $group_id = null) {
+        $group = $this->getById($group_id);
+        $indicators = new IndicatorModel();
+        $seg = new SegmentationGroupModel();
+        $indicators = $indicators->getAllByGroup($group->id);
+        /** @var IndicatorModel[][] $indicators */
+        foreach ($indicators as $segid => $array) {
+            $segmentation = $seg->getById($segid);
+            if ($segmentation) {
+                foreach ($array as $indicator) {
+                    $indicator->getRegionsValue($year);
+                }
+                $segmentation->indicators = $array;
+                $group->segmentations[] = $segmentation;
+            }
+        }
+        return $group->segmentations;
     }
 }

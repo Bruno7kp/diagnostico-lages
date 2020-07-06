@@ -5,6 +5,8 @@ namespace App\Segmentation;
 
 
 use App\Base\Model;
+use App\Indicator\IndicatorGroupModel;
+use App\Indicator\IndicatorModel;
 
 class SegmentationGroupModel extends Model
 {
@@ -32,6 +34,11 @@ class SegmentationGroupModel extends Model
      * @var string
      */
     public $updated;
+
+    /**
+     * @var IndicatorModel[]
+     */
+    public $indicators = [];
 
     /**
      * @return bool

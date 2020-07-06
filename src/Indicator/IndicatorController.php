@@ -275,11 +275,50 @@ class IndicatorController extends Controller
         return $this->view($request)->render($response, 'indicator\public.indicators.html.twig', ["categories" => $categories, "segmentation" => $segmentations]);
     }
 
-    public function indicador() {
+    public function indicador(Request $request, Response $response, $args) {
+        if (!array_key_exists("id", $args))
+            return $this->response($response, 404);
 
+        $group = new IndicatorGroupModel();
+        $group = $group->getById($args["id"]);
+        $groups = $group->getAllByCategory($group->categories_id, true);
+        $periods = $group->periods();
+        $period = $periods[0]["indicator_period"];
+
+        if (array_key_exists("period", $args))
+            $period = $args["period"];
+
+        $region = new RegionModel();
+        $regions = $region->getFullList();
+        $category = new CategoriesModel();
+        $category = $category->getById($group->categories_id);
+        $category->groups = $groups;
+        $seg = new SegmentationGroupModel();
+        $segmentations = $seg->getFullList();
+
+        $vals = $group->getByFilter($period, $group->id);
+
+        return $this->view($request)->render($response, 'indicator\public.indicator.html.twig', [
+            "current" => $group,
+            "regions" => $regions,
+            "period" => $period,
+            "periods" => $periods,
+            "values" => $vals,
+            "categories" => [$category],
+            "segmentation" => $segmentations
+        ]);
     }
 
-
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
     public function indice(Request $request, Response $response, $args) {
         if (!array_key_exists("id", $args))
             return $this->response($response, 404);

@@ -163,6 +163,9 @@
                 $("select[data-goto-url]").change(function(t) {
                     window.location.href = "{{ helper.url() }}" + $(this).val();
                 });
+                $(function () {
+                    $('abbr').tooltip();
+                });
                 $("[data-has-mask=percent]").mask('##0,00%', {reverse: true});
                 $("[data-has-mask=int_h]").mask('00000000000');
                 $("[data-has-mask=int_l]").mask('00000000000');

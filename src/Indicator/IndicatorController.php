@@ -341,10 +341,12 @@ class IndicatorController extends Controller
         if (array_key_exists("period", $args))
             $period = $args["period"];
 
-        $region = new RegionModel();
-        $regions = $region->getFullList();
-        $val = new IndicatorValueModel();
-        $vals = $val->getByFilter($period, $indicator->id);
+        $regionModel = new RegionModel();
+        $regions = $regionModel->getFullList();
+        $vals = [];
+        foreach ($regions as $region) {
+            $vals[] = $indicator->getYearlyRegionValue($periods, $region);
+        }
 
         $group = new IndicatorGroupModel();
         $group = $group->getById($indicator->indicator_group_id);

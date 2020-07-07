@@ -166,3 +166,8 @@ create table log
 create index log_user_id_index
     on log (user_id);
 
+insert into user (name, role, password, created, updated, email) values ('Uniplac', 'data', '$argon2id$v=19$m=1024,t=2,p=2$NFppdnl5WDl3QXlvZDhUZw$IDzTHEsLwJOSUxs0mWdcT8fjr9scpDoz026MORXlLM8', '2020-02-09 20:01:32', '2020-07-07 12:22:25', 'uniplac@uniplaclages.edu.br');
+insert into user (name, role, password, created, updated, email) values ('Sabrina', 'admin', '$argon2id$v=19$m=1024,t=2,p=2$Vzc0LmlpUlQ2akxENWxQLw$gcmxkDfWk9lvlaAvdk0toGDPuxtYTyS0Kl2PxqK3XuQ', '2020-02-09 22:18:57', '2020-07-07 12:16:53', 'sabrina@uniplac.net');
+insert into user (name, role, password, created, updated, email) values ('Bruno', 'mod', '$argon2id$v=19$m=1024,t=2,p=2$SU8vNS44eS96eTJMa1ZXWA$LKSwwfjGdwKhKlZjwSLnYRPrdn6rRMMzubrgpzJEuns', '2020-02-09 22:19:18', '2020-07-07 12:21:20', 'bruno@uniplaclages.edu.br');
+
+

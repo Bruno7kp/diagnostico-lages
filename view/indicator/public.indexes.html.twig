@@ -6,56 +6,34 @@
         <div class="row">
             <div class="col-sm-12 col-md-8">
                 <div class="card overflow-auto">
-                    <div class="card-header d-block d-md-none">
-                        <span class="text-default">Dados referentes ao ano de <strong>{{ period }}</strong></span>
-                        <select class="form-control" data-goto-url name="regiao" id="regiao">
-                            <option selected disabled>Selecione outro ano</option>
-                            {% for p in periods %}
-                                <option value="/indice/{{ current.id }}/{{ helper.slug(current.name) }}/{{ p.indicator_period }}">
-                                    {{ p.indicator_period }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
                     <div class="card-header justify-content-between">
                         <span>
                             <h3 class="card-title">{{ current.name }}</h3>
                             <small class="">{{ current.description }}</small>
                         </span>
-                        <div class="dropdown">
-                            <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
-                                <span class="ml-2 d-none d-lg-block">
-                                    <span class="text-default">Dados referentes ao ano de <strong>{{ period }}</strong></span>
-                                    <small class="text-muted text-right d-block mt-1">Selecione o ano</small>
-                                </span>
-                                <span class="ml-2 d-none d-lg-block text-default">
-                                    <i class="fe fe-chevron-down"></i>
-                                </span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                {% for p in  periods %}
-                                <a class="dropdown-item" href="/indice/{{ current.id }}/{{ helper.slug(current.name) }}/{{ p.indicator_period }}">
-                                    <i class="dropdown-icon fe fe-calendar"></i> {{ p.indicator_period }}
-                                </a>
-                                {% endfor %}
-                            </div>
-                        </div>
                     </div>
                     <table class="table card-table table-striped">
                         <tr>
                             <th>Região</th>
-                            <th>{{ current.name }}</th>
-                            <th>Observações</th>
+                            {% for p in periods %}
+                                <th>{{ p.indicator_period }}</th>
+                            {% endfor %}
                         </tr>
-                        {% for v in values %}
+                        {% for k, years in values %}
+                            {% set r = regions[k] %}
                             <tr>
-                                {% if v.region_description|length > 0 %}
-                                    <td><abbr title="{{ v.region_description }}">{{ v.region_name }}</abbr></td>
+                                {% if r.description|length > 0 %}
+                                    <td><abbr title="{{ r.description }}">{{ r.name }}</abbr></td>
                                 {% else %}
-                                    <td>{{ v.region_name }}</td>
+                                    <td>{{ r.name }}</td>
                                 {% endif %}
-                                <td>{{ v.value }}</td>
-                                <td><small class="">{{ v.description }}</small></td>
+                                {% for v in years %}
+                                    {% if v.description|length > 0 %}
+                                        <td><abbr title="{{ v.description }}">{{ v.value }}</abbr></td>
+                                    {% else %}
+                                        <td>{{ v.value }}</td>
+                                    {% endif %}
+                                {% endfor %}
                             </tr>
                         {% else %}
                             <tr>

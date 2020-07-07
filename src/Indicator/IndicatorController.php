@@ -337,6 +337,7 @@ class IndicatorController extends Controller
         $indicator = $indicator->getById($args["id"]);
         $periods = $indicator->periods();
         $period = $periods[0]["indicator_period"];
+        $periods = array_reverse($periods);
 
         if (array_key_exists("period", $args))
             $period = $args["period"];

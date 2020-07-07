@@ -35,6 +35,7 @@ Os usuário são:
 O sistema mostra dados de indicadores sociais para determinadas regiões, para isso o sistema tem a seguinte estrutura de dados:
 
 ![image](https://user-images.githubusercontent.com/6254886/86806156-f8a89000-c04e-11ea-8634-5a9055b1ca4c.png)
+
 (Imagem da página inicial, mostrando todas as categorias, indicadores e índices.)
 
 ###### Categorias
@@ -50,18 +51,22 @@ O índice é a informação necessária de se coletar dados, por exemplo: Porcen
 Definem se o índice pertence a algum tipo de segmentação, assim é possível agrupar os índices dessa segmentação, por exemplo, uma lista de índices de pessoas alfabetizadas por faixa etária.
 
 ![image](https://user-images.githubusercontent.com/6254886/86810605-7d95a880-c053-11ea-9e8b-b5a54e1940c6.png)
+
 (Imagem da página de um indicador, mostrando todos os índices com os valores para cada região)
 
 ![image](https://user-images.githubusercontent.com/6254886/86812763-c189ad00-c055-11ea-85a3-0d9f8d05a79c.png)
+
 (Imagem da página de um índice, mostrando os dados de cada região por ano)
 
  ###### Regiões
 Os dados de cada índice são referentes a uma região (bairro, cidade, etc.) e a um ano determinado no momento do seu cadastro.
 
 ![image](https://user-images.githubusercontent.com/6254886/86810416-3effee00-c053-11ea-8bb6-d1ab5816f2b8.png)
+
 (Imagem da página de uma região, mostrando os dados de todos os índices cadastrados para a mesma)
 
 
 ![image](https://user-images.githubusercontent.com/6254886/86814094-5345ea00-c057-11ea-95c8-e850fc973f10.png)
+
 Quando um dado, região, indicador ou outros tem alguma observação, o mesmo ficará com um sublinhado tracejado onde ao passar o mouse em cima ou clicar sobre o texto (no celular), aparecerá o texto da observação.
   

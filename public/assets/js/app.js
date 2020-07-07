@@ -33,16 +33,18 @@ const Auth = {
         }
     },
     logout: function() {
-        let button = document.querySelector("button#button-logout");
-        if (button !== null) {
-            button.addEventListener("click", function(event) {
-                fetch("/auth/logout", {
-                    method: "post",
-                    credentials: "same-origin"
-                }).then((response) => {
-                    window.location.href = "/login";
+        let button = document.querySelectorAll("#button-logout, #link-logout");
+        if (button !== null && button.length > 0) {
+            for (let i = 0; i < button.length; i++) {
+                button[i].addEventListener("click", function(event) {
+                    fetch("/auth/logout", {
+                        method: "post",
+                        credentials: "same-origin"
+                    }).then((response) => {
+                        window.location.href = "/login";
+                    });
                 });
-            });
+            }
         }
     },
 };

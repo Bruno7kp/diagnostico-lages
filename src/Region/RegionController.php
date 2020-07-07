@@ -5,6 +5,9 @@ namespace App\Region;
 
 
 use App\Base\Controller;
+use App\Categories\CategoriesModel;
+use App\Indicator\IndicatorGroupModel;
+use App\Segmentation\SegmentationGroupModel;
 use App\User\Roles;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -205,6 +208,35 @@ class RegionController extends Controller
     public function regioes(Request $request, Response $response) {
         $region = new RegionModel();
         $regions = $region->getFullList();
-        return $this->view($request)->render($response, 'region\public.region.html.twig', ["regions" => $regions]);
+        return $this->view($request)->render($response, 'region\public.regions.html.twig', ["regions" => $regions]);
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
+    public function regiao(Request $request, Response $response, $args) {
+        if (!array_key_exists("id", $args))
+            return $this->response($response, 404);
+
+        $region = new RegionModel();
+        $regions = $region->getFullList();
+        $region = $region->getById($args["id"]);
+        $periods = $region->periods();
+        $vals = $region->getYearlyData($periods);
+
+
+        return $this->view($request)->render($response, 'region\public.region.html.twig', [
+            "current" => $region,
+            "regions" => $regions,
+            "periods" => $periods,
+            "values" => $vals
+        ]);
     }
 }

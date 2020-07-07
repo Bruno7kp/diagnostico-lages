@@ -275,6 +275,16 @@ class IndicatorController extends Controller
         return $this->view($request)->render($response, 'indicator\public.indicators.html.twig', ["categories" => $categories, "segmentation" => $segmentations]);
     }
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws \ReflectionException
+     */
     public function indicador(Request $request, Response $response, $args) {
         if (!array_key_exists("id", $args))
             return $this->response($response, 404);

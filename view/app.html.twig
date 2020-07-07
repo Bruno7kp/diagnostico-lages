@@ -16,7 +16,7 @@
         <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     {% endblock %}
-    <title>{% block title %}Home{% endblock %} - Diagnóstico Lages</title>
+    <title>{% block title %}Home{% endblock %} - Diagnóstico de Lages</title>
     {% block style %}
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
@@ -106,7 +106,11 @@
                                         <i class="fe fe-map-pin"></i> Diagnóstico por regiões da cidade
                                     </a>
                                 </li>
-
+                                {% if user.id > 0 %}
+                                    <li class="nav-item d-md-none d-lg-none">
+                                        <a href="/admin" class="nav-link"><i class="fe fe-log-in"></i> Área administrativa</a>
+                                    </li>
+                                {% endif %}
                             </ul>
                         </div>
                     </div>
@@ -156,8 +160,9 @@
         </footer>
         <script>
             require(['selectize', 'jquery', 'input-mask'], function(selectize, $) {
-                $("select[multiple]").selectize({placeholder: 'Selecione uma ou mais opções',plugins: ['remove_button'],});
-                $("select:not([multiple])").selectize({placeholder: 'Selecione uma opção',});
+                $("select[data-goto-url]").change(function(t) {
+                    window.location.href = "{{ helper.url() }}" + $(this).val();
+                });
                 $("[data-has-mask=percent]").mask('##0,00%', {reverse: true});
                 $("[data-has-mask=int_h]").mask('00000000000');
                 $("[data-has-mask=int_l]").mask('00000000000');

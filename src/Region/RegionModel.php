@@ -5,6 +5,9 @@ namespace App\Region;
 
 
 use App\Base\Model;
+use App\Categories\CategoriesModel;
+use App\Indicator\IndicatorModel;
+use App\Segmentation\SegmentationGroupModel;
 
 class RegionModel extends Model
 {
@@ -146,5 +149,41 @@ class RegionModel extends Model
         if ($res)
             return intval($res->total);
         return 0;
+    }
+
+    /**
+     * @return array[]
+     */
+    public function periods() {
+        $st = $this->db->prepare("SELECT v.indicator_period FROM indicator_value v WHERE v.region_id = :id GROUP BY v.indicator_period ORDER BY v.indicator_period");
+        $st->execute([":id" => $this->id]);
+        $fill = $st->fetchAll(\PDO::FETCH_ASSOC);
+        if ($fill)
+            return $fill;
+        $now = new \DateTime();
+        return [["indicator_period" => $now->format("Y")]];
+    }
+
+    public function getYearlyData($periods) {
+        // categories -> group -> indicator -> year -> data
+        $seg = new SegmentationGroupModel();
+        $category = new CategoriesModel();
+        $categories = $category->getFullList(true);
+        foreach ($categories as $category) {
+            foreach ($category->groups as $group) {
+                foreach ($group->indicators as $segid => $array) {
+                    $segmentation = $seg->getById($segid);
+                    if ($segmentation) {
+                        foreach ($array as $indicator) {
+                            $indicator->getYearlyRegionValue($periods, $this);
+                        }
+                        $segmentation->indicators = $array;
+                        $group->segmentations[] = $segmentation;
+                    }
+                }
+            }
+        }
+
+        return $categories;
     }
 }

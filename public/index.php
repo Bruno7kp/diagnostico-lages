@@ -45,6 +45,7 @@ $app->get('/', IndicatorController::class.":indicadores");
 $app->get('/regioes', RegionController::class.":regioes");
 $app->get('/indicadores', IndicatorController::class.":indicadores");
 $app->get('/regiao/{id}/{slug}', RegionController::class.":regiao");
+$app->get('/regiao/{id}/{slug}/{period}', RegionController::class.":regiao");
 $app->get('/indice/{id}/{slug}', IndicatorController::class.":indice");
 $app->get('/indice/{id}/{slug}/{period}', IndicatorController::class.":indice");
 $app->get('/indicador/{id}/{slug}', IndicatorController::class.":indicador");

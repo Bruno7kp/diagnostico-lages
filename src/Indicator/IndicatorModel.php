@@ -56,6 +56,8 @@ class IndicatorModel extends Model
      */
     public $regions = [];
 
+    public $periods = [];
+
     /**
      * @return bool
      */
@@ -278,20 +280,49 @@ class IndicatorModel extends Model
         return [["indicator_period" => $now->format("Y")]];
     }
 
+    /**
+     * @param $year
+     * @return array
+     */
     public function getRegionsValue($year) {
         $regions = new RegionModel();
         $regions = $regions->getFullList();
         $values = new IndicatorValueModel();
+        $list = [];
         foreach ($regions as $region) {
             /** @var null|IndicatorValueModel[] $res */
             $res = $values->getByFilter($year, $this->id, $region->id);
             if ($res) {
-                $this->regions[] = $res[0];
+                $list[] = $res[0];
             } else {
-                $this->regions[] = new IndicatorValueModel();
+                $list[] = new IndicatorValueModel();
             }
         }
-
+        $this->regions = $list;
         return $this->regions;
+    }
+
+    /**
+     * @param $periods
+     * @param RegionModel $regionModel
+     * @return array
+     */
+    public function getYearlyRegionValue($periods, RegionModel $regionModel) {
+        $list = [];
+        $values = new IndicatorValueModel();
+        foreach ($periods as $period) {
+            $search = $values->getByFilter($period["indicator_period"], $this->id, $regionModel->id);
+            if ($search) {
+                $list[] = $search[0];
+            } else {
+                $aux = new IndicatorValueModel();
+                $aux->indicator_id = $this->id;
+                $aux->region_id = $regionModel->id;
+                $aux->indicator_period = $period["indicator_period"];
+                $list[] = $aux;
+            }
+        }
+        $this->periods = $list;
+        return $this->periods;
     }
 }

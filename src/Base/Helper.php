@@ -20,6 +20,14 @@ class Helper
         echo "</pre>";
     }
 
+    function url(){
+        return sprintf(
+            "%s://%s",
+            isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+            $_SERVER['SERVER_NAME']
+        );
+    }
+
     public function slug($text) {
         // replace non letter or digits by -
         $text = preg_replace('~[^\pL\d]+~u', '-', $text);

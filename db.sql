@@ -108,7 +108,7 @@ create table indicator_value
     region_id int not null,
     segmentation_id int null,
     indicator_period varchar(40) not null,
-    value text null,
+    value mediumtext null,
     description text null,
     created timestamp default CURRENT_TIMESTAMP not null,
     updated timestamp null,

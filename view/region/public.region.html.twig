@@ -1,133 +1,166 @@
-{% extends "app.html.twig" %}
-{% block title %}{{ current.name }}{% endblock %}
+    {% extends "app.html.twig" %}
+    {% block title %}{{ current.name }}{% endblock %}
 
-{% block content %}
-    <div class="container mt-6">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header d-block d-md-none">
-                        <select class="form-control" data-goto-url name="regiao" id="regiao">
-                            <option selected disabled>Selecione outra região</option>
-                            {% for r in regions %}
-                                <option value="/regiao/{{ r.id }}/{{ helper.slug(r.name) }}">
-                                    {{ r.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="card-header justify-content-between">
-                        <div class="d-flex">
-                            {% if current.city %}
-                                <span class="stamp stamp-md bg-blue-dark mr-3">
-                                  <i class="fe fe-star"></i>
-                                </span>
-                            {% else %}
-                                <span class="stamp stamp-md bg-blue mr-3">
-                                  <i class="fe fe-map-pin"></i>
-                                </span>
-                            {% endif %}
-                                <span>
-                                    <h3 class="card-title">{{ current.name }}</h3>
-                                    <small>{{ current.description }}</small>
-                                </span>
-                        </div>
-                        <div class="dropdown">
-                            <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
-                                <span class="ml-2 d-none d-md-block">
-                                    <span class="text-default">Selecione outra região</span>
-                                </span>
-                                <span class="ml-2 d-none d-md-block text-default">
-                                    <i class="fe fe-chevron-down"></i>
-                                </span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+    {% block content %}
+        <div class="container mt-6">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header d-block d-md-none">
+                            <select class="form-control" data-goto-url name="regiao" id="regiao">
+                                <option selected disabled>Selecione outra região</option>
                                 {% for r in regions %}
-                                    <a class="dropdown-item" href="/regiao/{{ r.id }}/{{ helper.slug(r.name) }}">
-                                        {% if r.city %}
-                                            <i class="dropdown-icon fe fe-star"></i> {{ r.name }}
-                                        {% else %}
-                                            <i class="dropdown-icon fe fe-map-pin"></i> {{ r.name }}
-                                        {% endif%}
-                                    </a>
+                                    <option value="/regiao/{{ r.id }}/{{ helper.slug(r.name) }}">
+                                        {{ r.name }}
+                                    </option>
                                 {% endfor %}
+                            </select>
+                        </div>
+                        <div class="card-header justify-content-between">
+                            <div class="d-flex">
+                                {% if current.city %}
+                                    <span class="stamp stamp-md bg-blue-dark mr-3">
+                                      <i class="fe fe-star"></i>
+                                    </span>
+                                {% else %}
+                                    <span class="stamp stamp-md bg-blue mr-3">
+                                      <i class="fe fe-map-pin"></i>
+                                    </span>
+                                {% endif %}
+                                    <span>
+                                        <h3 class="card-title">{{ current.name }}</h3>
+                                        <small>{{ current.description }}</small>
+                                    </span>
+                            </div>
+                            <div class="dropdown">
+                                <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
+                                    <span class="ml-2 d-none d-md-block">
+                                        <span class="text-default">Selecione outra região</span>
+                                    </span>
+                                    <span class="ml-2 d-none d-md-block text-default">
+                                        <i class="fe fe-chevron-down"></i>
+                                    </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                    {% for r in regions %}
+                                        <a class="dropdown-item" href="/regiao/{{ r.id }}/{{ helper.slug(r.name) }}">
+                                            {% if r.city %}
+                                                <i class="dropdown-icon fe fe-star"></i> {{ r.name }}
+                                            {% else %}
+                                                <i class="dropdown-icon fe fe-map-pin"></i> {{ r.name }}
+                                            {% endif%}
+                                        </a>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                {% for category in values %}
-                <div class="card overflow-auto">
-                    <div class="card-header">
-                        <span class="stamp stamp-md bg-green-dark mr-3">
-                            <i class="fe fe-star"></i>
-                        </span>
-                        <div>
-                            <h4 class="m-0" id="{{ helper.slug(category.name) }}"><a href="/#{{ helper.slug(category.name) }}">{{ category.name }}</a></h4>
+                    {% for category in values %}
+                    <div class="card overflow-auto check-has-value">
+                        <div class="card-header">
+                            <span class="stamp stamp-md bg-green-dark mr-3">
+                                <i class="fe fe-star"></i>
+                            </span>
+                            <div>
+                                <h4 class="m-0" id="{{ helper.slug(category.name) }}"><a href="/#{{ helper.slug(category.name) }}">{{ category.name }}</a></h4>
+                            </div>
                         </div>
-                    </div>
-                    <table class="table card-table table-bordered">
-                        <tr>
-                            <th>Índice</th>
-                            {% for period in periods %}
-                                <th>{{ period.indicator_period }}</th>
-                            {% endfor %}
-                        </tr>
-                        {% for group in category.groups %}
-                            <tr>
-                                {% if group.description|length > 0 %}
-                                    <th colspan="99">
-                                        <span class="stamp bg-green-light mr-3">
-                                            <i class="fe fe-star"></i>
-                                        </span>
-                                        <abbr title="{{ group.description }}">{{ group.name }}</abbr>
-                                    </th>
-                                {% else %}
-                                    <th colspan="99">
-                                        <span class="stamp bg-green-light mr-3">
-                                            <i class="fe fe-star"></i>
-                                        </span>
-                                        {{ group.name }}
-                                    </th>
-                                {% endif %}
-                            </tr>
-                            {% for seg in group.segmentations %}
-
-                                {% if (seg.id == 1 and group.segmentations|length > 1) or seg.id > 1 %}
-                                    <tr>
-                                        {% if seg.description|length > 0 %}
-                                            <th class="py-1" colspan="99"><abbr title="{{ seg.description }}">{{ seg.name }}</abbr></th>
-                                        {% else %}
-                                            <th class="py-1" colspan="99">{{ seg.name }}</th>
-                                        {% endif %}
-                                    </tr>
-                                {% endif %}
-                                {% for indicator in seg.indicators %}
-                                    <tr>
-                                        {% if indicator.description|length > 0 %}
-                                            <td><abbr title="{{ indicator.description }}">{{ indicator.name }}</abbr></td>
-                                        {% else %}
-                                            <td>{{ indicator.name }}</td>
-                                        {% endif %}
-                                        {% for v in indicator.periods %}
-                                            {% if v.description|length > 0 %}
-                                                <td><abbr title="{{ v.description }}">{{ v.value }}</abbr></td>
-                                            {% else %}
-                                                <td>{{ v.value }}</td>
-                                            {% endif %}
-                                        {% endfor %}
+                        <table class="table card-table table-bordered">
+                            {% for group in category.groups %}
+                                <tr class="check-next-row">
+                                    {% if group.description|length > 0 %}
+                                        <th colspan="99">
+                                            <span class="stamp bg-green-light mr-3">
+                                                <i class="fe fe-star"></i>
+                                            </span>
+                                            <abbr title="{{ group.description }}">{{ group.name }}</abbr>
+                                        </th>
+                                    {% else %}
+                                        <th colspan="99">
+                                            <span class="stamp bg-green-light mr-3">
+                                                <i class="fe fe-star"></i>
+                                            </span>
+                                            {{ group.name }}
+                                        </th>
+                                    {% endif %}
+                                </tr>
+                                {% for seg in group.segmentations %}
+                                    <tr class="check-has-value">
+                                        <td>
+                                            <table class="table card-table table-bordered">
+                                                <tr>
+                                                    {% if seg.description|length > 0 %}
+                                                        <th><abbr title="{{ seg.description }}">{{ seg.name }}</abbr></th>
+                                                    {% else %}
+                                                        <th>{{ seg.name }}</th>
+                                                    {% endif %}
+                                                    {% for period in periods %}
+                                                        {% if helper.has_period(seg.indicators, period.indicator_period) %}
+                                                        <th>{{ period.indicator_period }}</th>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tr>
+                                                {% for indicator in seg.indicators %}
+                                                    {% if helper.has_any_period(indicator) %}
+                                                    <tr>
+                                                        {% if indicator.description|length > 0 %}
+                                                            <td><abbr title="{{ indicator.description }}">{{ indicator.name }}</abbr></td>
+                                                        {% else %}
+                                                            <td>{{ indicator.name }}</td>
+                                                        {% endif %}
+                                                        {% if indicator.type == 'text' %}
+                                                            <td colspan="99" class="w-75 has-value">
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <nav>
+                                                                            <div class="nav nav-tabs active-last" id="nav-tab-{{ indicator.id }}" role="tablist">
+                                                                                {% for k, p in periods %}
+                                                                                    {% if indicator.periods[k].value|length > 0 %}
+                                                                                    <a class="nav-item nav-link" id="nav-{{ indicator.id }}-{{ k }}-tab" data-toggle="tab" href="#nav-{{ indicator.id }}-{{ k }}" role="tab" aria-controls="nav-{{ indicator.id }}-{{ k }}" aria-selected="false" style="padding: 1rem 1.5rem;">
+                                                                                        {{ p.indicator_period }}
+                                                                                    </a>
+                                                                                    {% endif %}
+                                                                                {% endfor %}
+                                                                            </div>
+                                                                        </nav>
+                                                                        <div class="tab-content mb-6" id="nav-tabContent-{{ indicator.id }}">
+                                                                            {% for k, v in indicator.periods %}
+                                                                                {% if v.value|length > 0 %}
+                                                                                <div class="tab-pane fade" id="nav-{{ indicator.id }}-{{ k }}" role="tabpanel" aria-labelledby="nav-{{ indicator.id }}-{{ k }}-tab">
+                                                                                    {% if v.description|length > 0 %}
+                                                                                        <p><strong>Observações:</strong> {{ v.description }}</p>
+                                                                                    {% endif %}
+                                                                                    {{ v.value|raw }}
+                                                                                </div>
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        {% else %}
+                                                            {% for v in indicator.periods %}
+                                                                {% if helper.has_period(seg.indicators, v.indicator_period)  %}
+                                                                    {% if v.description|length > 0 %}
+                                                                        <td><abbr class="has-value" title="{{ v.description }}">{{ v.value }}</abbr></td>
+                                                                    {% else %}
+                                                                        <td class="has-value">{{ v.value }}</td>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </table>
+                                        </td>
                                     </tr>
                                 {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="3">Nenhum dado encontrado.</td>
-                                </tr>
-
                             {% endfor %}
-                        {% endfor %}
-                    </table>
+                        </table>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
-    </div>
-{% endblock %}
+    {% endblock %}

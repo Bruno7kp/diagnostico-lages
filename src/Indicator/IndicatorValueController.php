@@ -37,7 +37,7 @@ class IndicatorValueController extends Controller
             if (array_key_exists("indicator_period", $body)) {
                 $value->indicator_period = $body["indicator_period"];
             } else {
-                return $this->response($response, 400, ["message" => "Selecione o ano."]);
+                return $this->response($response, 400, ["message" => "Selecione o período."]);
             }
 
             if (array_key_exists("description", $body) && !empty(trim($body["description"]))) {
@@ -104,7 +104,7 @@ class IndicatorValueController extends Controller
                     if (array_key_exists("indicator_period", $body)) {
                         $value->indicator_period = $body["indicator_period"];
                     } else {
-                        return $this->response($response, 400, ["message" => "Selecione o ano."]);
+                        return $this->response($response, 400, ["message" => "Selecione o período."]);
                     }
 
                     if (array_key_exists("description", $body) && !empty(trim($body["description"]))) {
@@ -172,7 +172,7 @@ class IndicatorValueController extends Controller
                     if (array_key_exists("indicator_period", $body)) {
                         $value->indicator_period = $body["indicator_period"];
                     } else {
-                        return $this->response($response, 400, ["message" => "Selecione o ano."]);
+                        return $this->response($response, 400, ["message" => "Selecione o período."]);
                     }
 
                     if (array_key_exists("description", $body) && !empty(trim($body["description"]))) {
@@ -245,7 +245,7 @@ class IndicatorValueController extends Controller
                             if (array_key_exists("indicator_period", $body)) {
                                 $value->indicator_period = $body["indicator_period"];
                             } else {
-                                return $this->response($response, 400, ["message" => "Selecione o ano."]);
+                                return $this->response($response, 400, ["message" => "Selecione o período."]);
                             }
 
                             if (array_key_exists("description", $body) && !empty(trim($body["description"]))) {

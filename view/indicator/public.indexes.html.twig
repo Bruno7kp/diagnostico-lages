@@ -12,35 +12,78 @@
                             <small class="">{{ current.description }}</small>
                         </span>
                     </div>
-                    <table class="table card-table table-striped">
-                        <tr>
-                            <th>Região</th>
-                            {% for p in periods %}
-                                <th>{{ p.indicator_period }}</th>
+                    {% if current.type == 'text' %}
+                        <div class="card-body">
+                            {% for k, years in values %}
+                                {% set r = regions[k] %}
+                                <div class="row">
+                                    <div class="col-12">
+                                        {% if r.description|length > 0 %}
+                                            <h4><abbr title="{{ r.description }}">{{ r.name }}</abbr></h4>
+                                        {% else %}
+                                            <h4>{{ r.name }}</h4>
+                                        {% endif %}
+                                        <nav>
+                                            <div class="nav nav-tabs active-last" id="nav-tab-{{ r.id }}" role="tablist">
+                                                {% for p in periods %}
+                                                    <a class="nav-item nav-link" id="nav-{{ r.id }}-{{ p.indicator_period }}-tab" data-toggle="tab" href="#nav-{{ r.id }}-{{ p.indicator_period }}" role="tab" aria-controls="nav-{{ r.id }}-{{ p.indicator_period }}" aria-selected="false" style="padding: 1rem 1.5rem;">
+                                                        {{ p.indicator_period }}
+                                                    </a>
+                                                {% endfor %}
+                                            </div>
+                                        </nav>
+                                        <div class="tab-content mb-6" id="nav-tabContent-{{ r.id }}">
+                                            {% for v in years %}
+                                                <div class="tab-pane fade" id="nav-{{ r.id }}-{{ v.indicator_period }}" role="tabpanel" aria-labelledby="nav-{{ r.id }}-{{ v.indicator_period }}-tab">
+                                                    {% if v.description|length > 0 %}
+                                                        <p><strong>Observações:</strong> {{ v.description }}</p>
+                                                    {% endif %}
+                                                    {{ v.value|raw }}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p>Nenhum dado encontrado.</p>
+                                    </div>
+                                </div>
                             {% endfor %}
-                        </tr>
-                        {% for k, years in values %}
-                            {% set r = regions[k] %}
+                        </div>
+                    {% else %}
+                        <table class="table card-table table-striped">
                             <tr>
-                                {% if r.description|length > 0 %}
-                                    <td><abbr title="{{ r.description }}">{{ r.name }}</abbr></td>
-                                {% else %}
-                                    <td>{{ r.name }}</td>
-                                {% endif %}
-                                {% for v in years %}
-                                    {% if v.description|length > 0 %}
-                                        <td><abbr title="{{ v.description }}">{{ v.value }}</abbr></td>
-                                    {% else %}
-                                        <td>{{ v.value }}</td>
-                                    {% endif %}
+                                <th>Região</th>
+                                {% for p in periods %}
+                                    <th>{{ p.indicator_period }}</th>
                                 {% endfor %}
                             </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="3">Nenhum dado encontrado.</td>
-                            </tr>
-                        {% endfor %}
-                    </table>
+                            {% for k, years in values %}
+                                {% set r = regions[k] %}
+                                <tr>
+                                    {% if r.description|length > 0 %}
+                                        <td><abbr title="{{ r.description }}">{{ r.name }}</abbr></td>
+                                    {% else %}
+                                        <td>{{ r.name }}</td>
+                                    {% endif %}
+                                    {% for v in years %}
+                                        {% if v.description|length > 0 %}
+                                            <td><abbr title="{{ v.description }}">{{ v.value }}</abbr></td>
+                                        {% else %}
+                                            <td>{{ v.value }}</td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="3">Nenhum dado encontrado.</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+
                 </div>
             </div>
             <div class="col-sm-12 col-md-4">

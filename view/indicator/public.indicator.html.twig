@@ -7,9 +7,9 @@
             <div class="col-sm-12">
                 <div class="card overflow-auto">
                     <div class="card-header d-block d-md-none">
-                        <span class="text-default">Dados referentes ao ano de <strong>{{ period }}</strong></span>
+                        <span class="text-default">Dados referentes ao período de <strong>{{ period }}</strong></span>
                         <select class="form-control" data-goto-url name="regiao" id="regiao">
-                            <option selected disabled>Selecione outro ano</option>
+                            <option selected disabled>Selecione outro período</option>
                             {% for p in periods %}
                                 <option value="/indicador/{{ current.id }}/{{ helper.slug(current.name) }}/{{ p.indicator_period }}">
                                     {{ p.indicator_period }}
@@ -25,8 +25,8 @@
                         <div class="dropdown">
                             <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
                                 <span class="ml-2 d-none d-lg-block">
-                                    <span class="text-default">Dados referentes ao ano de <strong>{{ period }}</strong></span>
-                                    <small class="text-muted text-right d-block mt-1">Selecione o ano</small>
+                                    <span class="text-default">Dados referentes ao período de <strong>{{ period }}</strong></span>
+                                    <small class="text-muted text-right d-block mt-1">Selecione o período</small>
                                 </span>
                                 <span class="ml-2 d-none d-lg-block text-default">
                                     <i class="fe fe-chevron-down"></i>
@@ -69,13 +69,42 @@
                                     {% else %}
                                         <td>{{ indicator.name }}</td>
                                      {% endif %}
-                                    {% for v in indicator.regions %}
-                                        {% if v.description|length > 0 %}
-                                            <td><abbr title="{{ v.description }}">{{ v.value }}</abbr></td>
-                                        {% else %}
-                                            <td>{{ v.value }}</td>
-                                        {% endif %}
-                                    {% endfor %}
+                                    {% if indicator.type == 'text' %}
+                                        <td colspan="99" class="w-75">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <nav>
+                                                        <div class="nav nav-fill nav-tabs active-last" id="nav-tab-{{ indicator.id }}" role="tablist">
+                                                            {% for v in indicator.regions %}
+                                                                <a class="nav-item nav-link px-4" id="nav-{{ indicator.id }}-{{ v.id }}-tab" data-toggle="tab" href="#nav-{{ indicator.id }}-{{ v.id }}" role="tab" aria-controls="nav-{{ indicator.id }}-{{ v.id }}" aria-selected="false">
+                                                                    {{ v.region_name }}
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </nav>
+                                                    <div class="tab-content mb-6" id="nav-tabContent-{{ indicator.id }}">
+                                                        {% for v in indicator.regions %}
+                                                            <div class="tab-pane fade" id="nav-{{ indicator.id }}-{{ v.id }}" role="tabpanel" aria-labelledby="nav-{{ indicator.id }}-{{ v.id }}-tab">
+                                                                {% if v.description|length > 0 %}
+                                                                    <p><strong>Observações:</strong> {{ v.description }}</p>
+                                                                {% endif %}
+                                                                {{ v.value|raw }}
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% else%}
+                                        {% for v in indicator.regions %}
+                                            {% if v.description|length > 0 %}
+                                                <td><abbr title="{{ v.description }}">{{ v.value }}</abbr></td>
+                                            {% else %}
+                                                <td>{{ v.value }}</td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+
                                 </tr>
                             {% endfor %}
                         {% else %}

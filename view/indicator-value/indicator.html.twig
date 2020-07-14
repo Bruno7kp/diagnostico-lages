@@ -25,7 +25,7 @@
                         <form id="indicator-value-form" action="/indicator-value/batch-register" method="post" data-send>
                             <div class="mt-5 row">
                             {% for region in regions %}
-                                <div class="col-sm-12 col-md-4">
+                                <div class="col-sm-12{% if current.type != 'text' %} col-md-4{% endif %}">
                                     <div class="card">
                                         <div class="card-header">
                                             <h3 class="card-title">{{ region.name }}</h3>
@@ -36,8 +36,11 @@
                                             <input type="hidden" name="values[{{ region.id }}][region_id]" value="{{ region.id }}">
                                             <input type="hidden" name="values[{{ region.id }}][segmentation_id]" value="">
                                             <input type="hidden" class="period-input" name="values[{{ region.id }}][indicator_period]" value="{{ indicator_period }}">
+                                            {% if current.type != 'text' %}
                                             <input type="text" id="v{{ region.id }}" data-has-mask="{{ current.type }}" name="values[{{ region.id }}][value]" value="" class="form-control">
-
+                                            {% else %}
+                                            <textarea class="form-control ck" id="v{{ region.id }}" name="values[{{ region.id }}][value]"></textarea>
+                                            {% endif %}
                                             <label class="mt-2" for="o{{ region.id }}">Observações</label>
                                             <textarea id="o{{ region.id }}" name="values[{{ region.id }}][description]" class="form-control"></textarea>
                                         </div>

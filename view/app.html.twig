@@ -171,6 +171,10 @@
                 $("[data-has-mask=int_l]").mask('00000000000');
                 $("[data-has-mask=float_h]").mask('00000000000,00');
                 $("[data-has-mask=float_l]").mask('00000000000,00');
+                let tabs = document.querySelectorAll('.active-last');
+                for (let i = 0; i < tabs.length; i++) {
+                    $(tabs[i]).find("a:last-child").tab('show');
+                }
             });
         </script>
     {% endblock %}

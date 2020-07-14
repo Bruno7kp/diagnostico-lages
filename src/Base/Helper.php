@@ -14,6 +14,26 @@ class Helper
         $this->role = new Roles();
     }
 
+    public function has_any_period($indicator) {
+        foreach ($indicator->periods as $v) {
+            if (!empty(trim($v->value))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function has_period($indicators, $period) {
+        foreach ($indicators as $indicator) {
+            foreach ($indicator->periods as $v) {
+                if ($v->indicator_period === $period && !empty(trim($v->value))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public function dump($var) {
         echo "<pre>";
         var_dump($var);

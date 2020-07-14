@@ -53,6 +53,36 @@ const Manager = {
     start: function() {
         this.send();
         this.loadData();
+        this.checkEmptyCols();
+    },
+    checkEmptyCols: function () {
+        const check = document.querySelectorAll('.check-has-value');
+        for (let i = 0; i < check.length; i++) {
+            let cols = check[i].querySelectorAll('.has-value');
+            if (cols.length === 0)
+                check[i].parentElement.removeChild(check[i]);
+        }
+        const next = document.querySelectorAll('.check-next-row');
+        for (let i = 0; i < next.length; i++) {
+            let el = next[i].nextElementSibling;
+            if (el === null || (el.classList.contains('check-next-row'))) {
+                next[i].style.display = 'none';
+            }
+        }
+    },
+    loadCKEditor: function () {
+        const txts = document.querySelectorAll('textarea.ck');
+        for (let i = 0; i < txts.length; i++) {
+            let aux = CKEDITOR.instances[txts[i].id];
+            if (aux) {
+                CKEDITOR.instances[txts[i].id].setData(txts[i].value);
+            } else {
+                CKEDITOR.replace(txts[i].id);
+                CKEDITOR.instances[txts[i].id].on( 'change', function( evt ) {
+                    txts[i].value = evt.editor.getData();
+                });
+            }
+        }
     },
     loadData: function() {
         // Campo para definir o ano
@@ -96,6 +126,7 @@ const Manager = {
                             if (areaText)
                                 areaText.value = val.description;
                         }
+                        Manager.loadCKEditor();
                     });
                 });
             });

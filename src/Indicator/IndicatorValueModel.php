@@ -251,4 +251,15 @@ class IndicatorValueModel extends Model
         }
         return $list;
     }
+
+    public function getPeriodsByIndicator($id) {
+        $st = $this->db->prepare("SELECT indicator_period FROM indicator_value WHERE indicator_id = :id GROUP BY indicator_period");
+        $st->execute([":id" => $id]);
+        $list = [];
+        $l = $st->fetchAll(\PDO::FETCH_CLASS, \stdClass::class);
+        foreach ($l as $v) {
+            $list[] = $v->indicator_period;
+        }
+        return $list;
+    }
 }

@@ -102,7 +102,7 @@ class IndicatorValueController extends Controller
                     }
 
                     if (array_key_exists("indicator_period", $body)) {
-                        $value->indicator_period = $body["indicator_period"];
+                        $value->indicator_period = str_replace(["/", "\\", "?"], "-", $body["indicator_period"]);
                     } else {
                         return $this->response($response, 400, ["message" => "Selecione o período."]);
                     }
@@ -342,7 +342,10 @@ class IndicatorValueController extends Controller
             $regions = new RegionModel();
             $regions = $regions->getFullList();
             $values = new IndicatorValueModel();
+            $periods = $values->getPeriodsByIndicator($args["id"]);
             $values = $values->arrayByRegionId($values->getByFilter($year, $current->id));
+
+
             return $this->view($request)->render($response, 'indicator-value\indicator.html.twig', [
                 "current" => $current,
                 "groups" => $groups,
@@ -350,7 +353,8 @@ class IndicatorValueController extends Controller
                 "segmentations" => $segmentations,
                 "regions" => $regions,
                 "indicator_period" => $year,
-                "values" => $values
+                "values" => $values,
+                "periods" => $periods
             ]);
         }
         return $this->response($response->withHeader('Location', '/admin'), 302);

@@ -129,6 +129,11 @@ const Manager = {
                         Manager.loadCKEditor();
                     });
                 });
+                if (document.querySelector("#period_selector").value !== input.value) {
+                    $("#period_selector")[0].selectize.addOption({value:input.value,text:input.value});
+                    $("#period_selector")[0].selectize.addItem(input.value);
+                    $("#period_selector")[0].selectize.setValue(input.value, true);
+                }
             });
             refresh.click();
         }

@@ -12,13 +12,21 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                <label class="form-label">Digite o que ano os dados se referem, aperte em 'Atualizar dados' para mostrar e editar os dados do ano selecionado.</label>
+                                <label class="form-label">Selecione o que ano os dados se referem. Caso o ano ainda não tenha sido cadastrado, digite o ano aperte em 'Cadastrar dados'.</label>
                             </div>
                             <div class="col-md-3">
+                                <select id="period_selector">
+                                    <option></option>
+                                    {% for period in periods %}
+                                        <option value="{{ period }}" {% if period == indicator_period %}selected{% endif %}>{{ period }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3 offset-md-6">
                                 <input type="hidden" id="indicator_id" value="{{ current.id }}">
                                 <div class="input-group">
                                     <input type="text" id="indicator_period" name="indicator_period" class="form-control" value="{{ indicator_period }}">
-                                    <button type="button" title="Aperte para atualizar os dados" id="indicator_period_refresh" class="btn btn-outline-primary"><i class="fe fe-refresh-cw"></i> Atualizar dados</button>
+                                    <button type="button" title="Aperte para atualizar os dados" id="indicator_period_refresh" class="btn btn-outline-primary"><i class="fe fe-plus"></i> Cadastrar dados</button>
                                 </div>
                             </div>
                         </div>

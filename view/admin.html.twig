@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="pt-br" dir="ltr">
 <head>
     {% block meta %}
         <meta charset="UTF-8">
@@ -195,7 +195,15 @@
         <script>
             require(['selectize', 'jquery', 'input-mask'], function(selectize, $) {
                 $("select[multiple]").selectize({placeholder: 'Selecione uma ou mais opções',plugins: ['remove_button'],});
-                $("select:not([multiple])").selectize({placeholder: 'Selecione uma opção',});
+                $("select:not([multiple])").selectize({
+                    placeholder: 'Selecione uma opção',
+                    onChange: (value) => {
+                        if (document.querySelectorAll("#indicator_period").length) {
+                            document.querySelector("#indicator_period").value = value;
+                            document.querySelector("#indicator_period_refresh").click();
+                        }
+                    }
+                });
                 $("[data-has-mask=percent]").mask('##0,00%', {reverse: true});
                 $("[data-has-mask=int_h]").mask('00000000000');
                 $("[data-has-mask=int_l]").mask('00000000000');

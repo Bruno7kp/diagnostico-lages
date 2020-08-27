@@ -57,11 +57,14 @@
                             <tr>
                                 <th>Região</th>
                                 {% for p in periods %}
+                                    {% if p.indicator_period in validPeriods %}
                                     <th>{{ p.indicator_period }}</th>
+                                    {% endif %}
                                 {% endfor %}
                             </tr>
                             {% for k, years in values %}
                                 {% set r = regions[k] %}
+                                {% if r.id in validRegions %}
                                 <tr>
                                     {% if r.description|length > 0 %}
                                         <td><abbr title="{{ r.description }}">{{ r.name }}</abbr></td>
@@ -69,13 +72,14 @@
                                         <td>{{ r.name }}</td>
                                     {% endif %}
                                     {% for v in years %}
-                                        {% if v.description|length > 0 %}
+                                        {% if v.description|length > 0 and v.indicator_period in validPeriods %}
                                             <td><abbr title="{{ v.description }}">{{ v.value }}</abbr></td>
-                                        {% else %}
+                                        {% elseif v.indicator_period in validPeriods %}
                                             <td>{{ v.value }}</td>
                                         {% endif %}
                                     {% endfor %}
                                 </tr>
+                                {% endif %}
                             {% else %}
                                 <tr>
                                     <td colspan="3">Nenhum dado encontrado.</td>

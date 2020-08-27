@@ -307,6 +307,12 @@ class IndicatorController extends Controller
         $segmentations = $seg->getFullList();
 
         $vals = $group->getByFilter($period, $group->id);
+        $validRegions = [];
+        foreach ($vals as $val) {
+            foreach ($val->indicators as $indicator) {
+                $validRegions = array_merge($validRegions, $indicator->validRegions);
+            }
+        }
 
         return $this->view($request)->render($response, 'indicator\public.indicator.html.twig', [
             "current" => $group,
@@ -315,7 +321,8 @@ class IndicatorController extends Controller
             "periods" => $periods,
             "values" => $vals,
             "categories" => [$category],
-            "segmentation" => $segmentations
+            "segmentation" => $segmentations,
+            "validRegions" => $validRegions
         ]);
     }
 
@@ -345,8 +352,12 @@ class IndicatorController extends Controller
         $regionModel = new RegionModel();
         $regions = $regionModel->getFullList();
         $vals = [];
+        $validPeriods = [];
+        $validRegions = [];
         foreach ($regions as $region) {
             $vals[] = $indicator->getYearlyRegionValue($periods, $region);
+            $validPeriods = array_merge($validPeriods, $indicator->validPeriods);
+            $validRegions = array_merge($validRegions, $indicator->validRegions);
         }
 
         $group = new IndicatorGroupModel();
@@ -366,7 +377,9 @@ class IndicatorController extends Controller
             "periods" => $periods,
             "values" => $vals,
             "categories" => [$category],
-            "segmentation" => $segmentations
+            "segmentation" => $segmentations,
+            "validPeriods" => $validPeriods,
+            "validRegions" => $validRegions
         ]);
     }
 }

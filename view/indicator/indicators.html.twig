@@ -1,6 +1,16 @@
 {% extends "admin.html.twig" %}
 {% block title %}Indíces{% endblock %}
 
+{% block style %}
+    {{ parent() }}
+    <style>
+        th, td {
+            max-width: 300px !important;
+            white-space: normal;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <div class="container mt-6">
         <div class="row">

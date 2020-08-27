@@ -45,9 +45,9 @@
                         <tr>
                             <th>Índice</th>
                             {% for region in regions %}
-                                {% if region.description|length > 0 %}
+                                {% if region.description|length > 0 and region.id in validRegions %}
                                     <th><abbr title="{{ region.description }}">{{ region.name }}</abbr></th>
-                                {% else %}
+                                {% elseif region.id in validRegions %}
                                     <th>{{ region.name }}</th>
                                 {% endif %}
                             {% endfor %}
@@ -63,6 +63,7 @@
                             </tr>
                             {% endif %}
                             {% for indicator in seg.indicators %}
+                                {% if (indicator.validRegions|length > 0) %}
                                 <tr>
                                     {% if indicator.description|length > 0 %}
                                         <td><abbr title="{{ indicator.description }}">{{ indicator.name }}</abbr></td>
@@ -97,15 +98,15 @@
                                         </td>
                                     {% else%}
                                         {% for v in indicator.regions %}
-                                            {% if v.description|length > 0 %}
+                                            {% if v.description|length > 0 and v.region_id in validRegions %}
                                                 <td><abbr title="{{ v.description }}">{{ v.value }}</abbr></td>
-                                            {% else %}
+                                            {% elseif v.region_id in validRegions %}
                                                 <td>{{ v.value }}</td>
                                             {% endif %}
                                         {% endfor %}
                                     {% endif %}
-
                                 </tr>
+                                {% endif %}
                             {% endfor %}
                         {% else %}
                             <tr>

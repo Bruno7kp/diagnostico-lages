@@ -29,7 +29,6 @@
                                 {% endif %}
                                     <span>
                                         <h3 class="card-title">{{ current.name }}</h3>
-                                        <small>{{ current.description }}</small>
                                     </span>
                             </div>
                             <div class="dropdown">
@@ -55,6 +54,9 @@
                             </div>
                         </div>
                     </div>
+                    {% if current.description|length > 0 %}
+                        <div class="card"><div class="card-body">{{ current.description|raw }}</div></div>
+                    {% endif %}
                     {% for category in values %}
                     <div class="card overflow-auto check-has-value">
                         <div class="card-header">

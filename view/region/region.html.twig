@@ -32,7 +32,7 @@
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
                                     <label class="form-label">Descrição</label>
-                                    <textarea name="description" class="form-control" rows="3">{{ current.description }}</textarea>
+                                    <textarea name="description" class="form-control ck" id="dregion" rows="3">{{ current.description }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -45,4 +45,9 @@
         </div>
     </div>
 </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Manager.loadCKEditor();
+        });
+    </script>
 {% endblock %}

@@ -45,11 +45,7 @@
                         <tr>
                             <th>Índice</th>
                             {% for region in regions %}
-                                {% if region.description|length > 0 and region.id in validRegions %}
-                                    <th><abbr title="{{ region.description }}">{{ region.name }}</abbr></th>
-                                {% elseif region.id in validRegions %}
-                                    <th>{{ region.name }}</th>
-                                {% endif %}
+                                <th>{{ region.name }}</th>
                             {% endfor %}
                         </tr>
                         {% for seg in values %}
